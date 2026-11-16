@@ -1,0 +1,86 @@
+---
+title: Getting Started
+description: Export an unencrypted vault and run vaultlint locally via CLI or Web UI.
+---
+
+## 1. Export Your Vault Safely
+
+Export an **unencrypted** backup from your password manager or browser. vaultlint accepts Bitwarden, 1Password, KeePass, Proton Pass, Dashlane, LastPass, NordPass, Enpass, Keeper, RoboForm, Chrome-family browsers (Chrome, Edge, and Brave), Firefox, and Safari. See [supported formats](../../cli/formats/) for file types and [format schemas](../../cli/format-schemas/) for accepted fields.
+
+<div class="not-content my-6">
+  <Alert variant="warning">
+    <AlertTitle>Use an unencrypted export</AlertTitle>
+    <AlertDescription>
+      Encrypted exports such as Bitwarden <code>encrypted: true</code>, Proton Pass{" "}
+      <code>encrypted: true</code>, KeePass <code>.kdbx</code>, and Bramble <code>.bramble</code>{" "}
+      are rejected. Bramble’s KeePass export is password-protected; open it in KeePassXC and export
+      CSV or XML. Keep a backup of the original before writing changes.
+    </AlertDescription>
+  </Alert>
+</div>
+
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+  Badge,
+  Card,
+  CardContent,
+  CardHeader,
+} from "../../../ui";
+
+## 2. Choose How to Run
+
+<div class="not-content vl-doc-grid">
+  <Card size="sm" class="vl-doc-card">
+    <CardHeader>
+      <Badge tone="primary" appearance="soft">
+        No install
+      </Badge>
+      <h3>Hosted Web App</h3>
+    </CardHeader>
+    <CardContent>
+      <p>
+        Open the hosted <a href="../../app/">Web App</a> in your browser. Parsing and editing happen
+        on your device; optional network features only run when you start them.
+      </p>
+    </CardContent>
+  </Card>
+  <Card size="sm" class="vl-doc-card">
+    <CardHeader>
+      <Badge tone="neutral" appearance="outline">
+        Node ≥ 22.12
+      </Badge>
+      <h3>Local CLI or Web UI</h3>
+    </CardHeader>
+    <CardContent>
+      <p>
+        Install the <code>vaultlint</code> package from npm, then follow the{" "}
+        <a href="../../cli/">CLI Quick Start</a> for terminal commands and the local Web UI.
+      </p>
+    </CardContent>
+  </Card>
+</div>
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+<Tabs syncKey="pkg">
+  <TabItem label="npm">```bash npm install -g vaultlint ```</TabItem>
+  <TabItem label="pnpm">```bash pnpm add -g vaultlint ```</TabItem>
+  <TabItem label="Yarn">```bash yarn global add vaultlint ```</TabItem>
+  <TabItem label="Bun">```bash bun add -g vaultlint ```</TabItem>
+</Tabs>
+
+Start the local Web UI on `http://127.0.0.1:4173`:
+
+```bash
+vaultlint --ui
+```
+
+Or run a dry-run audit directly in your terminal:
+
+```bash
+vaultlint -i vault.json --audit --dry-run
+```
+
+Prefer to build from source? See the [CLI Quick Start](../../cli/).

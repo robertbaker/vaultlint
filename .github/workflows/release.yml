@@ -1,0 +1,100 @@
+name: Release
+
+# Releases the `vaultlint` npm package straight from main:
+#   After CI passes on main with releasable changes, release-it bumps package.json,
+#   updates CHANGELOG.md and bun.lock, commits to main, tags, creates the GitHub release,
+#   and publishes to npm.
+# Pushing to the protected main branch needs a token that may bypass branch protection, so the
+# workflow uses the RELEASE_TOKEN secret instead of GITHUB_TOKEN:
+#   - Fine-grained PAT (or a GitHub App token) with Contents: read/write on this repository.
+#   - Add the token's owner (or the app) to the main ruleset's bypass list, or to "Allow specified
+#     actors to bypass required pull requests" in classic branch protection.
+# The release commit subject ends in [skip ci] (see release-it's git.commitMessage in
+# package.json), so CI does not run on it. Its subject is also excluded from the releasable check
+# below, so a later run never releases because of it.
+# npm auth uses Trusted Publishing (OIDC), so no NPM_TOKEN secret is needed. Configure the trusted
+# publisher on npmjs.com: repository robertbaker/vaultlint, workflow `release.yml`.
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: read # pushes use RELEASE_TOKEN
+  id-token: write # npm Trusted Publishing (OIDC) and provenance
+  actions: read # read the triggering CI workflow run
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Only after a green CI run on main.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push')
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+          fetch-tags: true
+          token: ${{ secrets.RELEASE_TOKEN }}
+
+      - name: Decide what to do
+        id: gate
+        run: |
+          # If main moved on since CI ran, a newer CI run will trigger its own release.
+          if [ "${{ github.event_name }}" = "workflow_run" ] \
+            && [ "$(git rev-parse HEAD)" != "${{ github.event.workflow_run.head_sha }}" ]; then
+            echo "main has advanced past the commit CI validated; skipping."
+            echo "release=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          last=$(git describe --tags --abbrev=0 --match 'v[0-9]*' 2>/dev/null || true)
+          range=${last:+$last..HEAD}
+          echo "Last release tag: ${last:-none}"
+          releasable=$(git log --format=%s $range -- ':!*.md' \
+            | grep -Ev '^(docs|style)(\(.+\))?!?:' \
+            | grep -Ev '^chore: release' || true)
+          if [ -z "$releasable" ] && [ "${{ github.event_name }}" != "workflow_dispatch" ]; then
+            echo "Only docs/style changes since the last release; skipping."
+            echo "release=false" >> "$GITHUB_OUTPUT"
+          else
+            printf 'Releasable commits:\n%s\n' "$releasable"
+            echo "release=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Node 24 ships npm >= 11.5.1, which is required for Trusted Publishing.
+      - uses: actions/setup-node@v7
+        if: steps.gate.outputs.release == 'true'
+        with:
+          node-version: 24
+
+      - name: Set up Bun and install dependencies
+        uses: ./.github/actions/setup
+        if: steps.gate.outputs.release == 'true'
+
+      - name: Release
+        if: steps.gate.outputs.release == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          bunx release-it --ci
+          # release-it exits 0 with "No new version to release" when there are no releasable
+          # conventional commits; only publish when it tagged this commit.
+          if ! git tag --points-at HEAD --list 'v[0-9]*' | grep -q .; then
+            echo "release-it made no release; skipping npm publish."
+            exit 0
+          fi
+          npm publish ./publish --access public

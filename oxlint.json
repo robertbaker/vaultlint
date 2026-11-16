@@ -1,0 +1,24 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oxc-project/oxc/main/npm/oxlint/configuration_schema.json",
+  "env": {
+    "browser": true,
+    "node": true,
+    "es2026": true
+  },
+  "plugins": ["unicorn", "typescript", "oxc", "import", "jsdoc", "vitest", "promise", "node"],
+  "rules": {
+    "no-unused-vars": "warn",
+    "no-console": "off",
+    "eqeqeq": "warn",
+    "no-var": "error"
+  },
+  "ignorePatterns": [
+    "**/node_modules/**",
+    "**/.*/**",
+    "**/.*",
+    "**/dist/**",
+    "**/build/**",
+    "**/test-results/**",
+    "**/playwright-report/**"
+  ]
+}

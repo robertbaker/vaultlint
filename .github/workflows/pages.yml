@@ -1,0 +1,62 @@
+name: Deploy Site & Web UI to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/site/**'
+      - 'apps/web/**'
+      - 'packages/**'
+      - 'package.json'
+      - 'bun.lock'
+      - 'CHANGELOG.md'
+      - '.github/workflows/pages.yml'
+      - '.github/actions/setup/action.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build Site & Web UI
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+      - name: Build Astro Starlight site for GitHub Pages
+        env:
+          ASTRO_SITE: https://${{ github.repository_owner }}.github.io
+          ASTRO_BASE: /${{ github.event.repository.name }}
+        run: bun --filter site build
+      - name: Build Angular Web UI for GitHub Pages
+        run: bun --filter web build --base-href /${{ github.event.repository.name }}/app/
+      - name: Assemble combined Pages artifact
+        run: |
+          rm -rf _site
+          mkdir -p _site/app
+          cp -r apps/site/dist/. _site/
+          cp -r apps/web/dist/web/browser/. _site/app/
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

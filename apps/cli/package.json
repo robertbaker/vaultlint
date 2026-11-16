@@ -1,0 +1,66 @@
+{
+  "name": "vaultlint",
+  "version": "1.0.0",
+  "description": "A local-first TypeScript CLI and Angular Web UI for auditing, deduplicating, batch-editing, and converting unencrypted password manager vault exports (Bitwarden, LastPass, 1Password, KeePass, Proton Pass, Dashlane, and more).",
+  "keywords": [
+    "aegis",
+    "angular",
+    "bitwarden",
+    "cli",
+    "fido",
+    "hibp",
+    "password-manager",
+    "security",
+    "vault"
+  ],
+  "homepage": "https://github.com/robertbaker/vaultlint#readme",
+  "bugs": {
+    "url": "https://github.com/robertbaker/vaultlint/issues"
+  },
+  "license": "GPL-3.0",
+  "author": "Robert Baker",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/robertbaker/vaultlint.git"
+  },
+  "bin": {
+    "vaultlint": "./dist/index.js"
+  },
+  "files": [
+    "dist/"
+  ],
+  "main": "dist/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "start": "bun src/index.ts",
+    "dev": "bun --watch src/index.ts",
+    "ui": "bun src/index.ts --ui",
+    "build": "bun build src/index.ts --outdir dist --target node --format cjs --external @clack/prompts --external axios --external cli-table3 --external commander --external picocolors",
+    "typecheck": "tsc --noEmit",
+    "test": "bun test tests",
+    "test:watch": "bun test --watch tests",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "@clack/prompts": "^1.9.0",
+    "axios": "^1.21.1",
+    "cli-table3": "^0.6.5",
+    "commander": "^15.1.0",
+    "picocolors": "^1.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "@vaultlint/ai": "workspace:*",
+    "@vaultlint/brand": "workspace:*",
+    "@vaultlint/vault-formats": "workspace:*",
+    "@vaultlint/vault-ops": "workspace:*",
+    "@vaultlint/vault-schema": "workspace:*",
+    "rimraf": "^6.1.4",
+    "typescript": "^7.0.2"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}

@@ -1,0 +1,26 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  loading?: boolean;
+  loadingText?: string;
+  icon?: string;
+  iconPosition?: "left" | "right";
+  iconClass?: string;
+}
+
+const { loading = false, loadingText, icon, iconPosition = "left", iconClass } = Astro.props;
+const showIcon = Boolean(icon) && !loading;
+---
+
+{
+  loading && (
+    <span
+      class="size-4 animate-spin rounded-full border-2 border-current border-t-transparent"
+      aria-hidden="true"
+    />
+  )
+}
+{showIcon && iconPosition === "left" && <Icon name={icon!} class={iconClass} aria-hidden="true" />}
+{loading && loadingText ? <span>{loadingText}</span> : <slot />}
+{showIcon && iconPosition === "right" && <Icon name={icon!} class={iconClass} aria-hidden="true" />}

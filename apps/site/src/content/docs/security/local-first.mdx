@@ -1,0 +1,82 @@
+---
+title: Local-First Architecture
+description: How vaultlint protects your credentials and keeps processing local by default.
+---
+
+`vaultlint` runs locally by default in both the CLI and the Web UI.
+
+import { Badge, Card, CardContent, CardHeader } from "../../../ui";
+
+## Local operations
+
+Vault parsing, duplicate merging, password checks, URI syntax checks, batch editing, domain mapping, and password generation run on your machine or in your browser.
+
+Encrypted exports (Bitwarden `encrypted: true`, Proton Pass `encrypted: true`, KeePass `.kdbx`, and Bramble `.bramble`) are rejected. To use a Bramble vault, open its password-protected KeePass export in KeePassXC and export it as CSV or XML.
+
+Passwords are masked in CLI tables, activity logs, and JSON or Markdown reports. Plaintext vault data and AI API keys are not saved to `localStorage`.
+
+## Network features
+
+Each feature makes a request only when you start it. The cards show what leaves your device:
+
+<div class="not-content vl-doc-grid">
+  <Card size="sm" class="vl-doc-card">
+    <CardHeader>
+      <Badge tone="warning" appearance="soft">
+        Opt in · HIBP
+      </Badge>
+      <h3>Breach check</h3>
+    </CardHeader>
+    <CardContent>
+      <p>
+        Enable with <code>--check-compromised</code> or <strong>Check Breaches (HIBP)</strong>. Only
+        the first five characters of a SHA-1 password hash are sent through the k-anonymity range
+        API.
+      </p>
+    </CardContent>
+  </Card>
+  <Card size="sm" class="vl-doc-card">
+    <CardHeader>
+      <Badge tone="warning" appearance="soft">
+        Opt in · AI
+      </Badge>
+      <h3>AI actions</h3>
+    </CardHeader>
+    <CardContent>
+      <p>
+        Enable with <code>--enable-ai</code> or the AI panel. Only item names and hostnames are
+        sent; item positions stay local, and passwords, usernames, TOTP secrets, FIDO keys, and
+        notes are excluded. Ollama can process locally.
+      </p>
+    </CardContent>
+  </Card>
+  <Card size="sm" class="vl-doc-card">
+    <CardHeader>
+      <Badge tone="warning" appearance="soft">
+        Opt in · Network
+      </Badge>
+      <h3>URI redirect checks</h3>
+    </CardHeader>
+    <CardContent>
+      <p>
+        <code>--check-redirects</code> or the opt-in URI check sends HTTP <code>HEAD</code>/
+        <code>GET</code> requests to each stored <code>http(s)</code> login URL, including its path
+        and query. Credentials embedded in the URL (<code>user:password@</code>) are removed first.
+      </p>
+    </CardContent>
+  </Card>
+  <Card size="sm" class="vl-doc-card">
+    <CardHeader>
+      <Badge tone="warning" appearance="soft">
+        Opt in · Network
+      </Badge>
+      <h3>Mobile URI validation</h3>
+    </CardHeader>
+    <CardContent>
+      <p>
+        <code>--validate-mobile-uris</code> or the opt-in mobile check looks up package and
+        app-store data for <code>androidapp://</code> and <code>iosapp://</code> URIs.
+      </p>
+    </CardContent>
+  </Card>
+</div>

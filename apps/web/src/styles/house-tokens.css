@@ -1,0 +1,96 @@
+/**
+ * Tokens the house layer needs on top of the shared brand palette (@vaultlint/brand/tokens.css):
+ * the `*-readable` aliases, the `--av-ui-*` control contract the patched helm components size and
+ * animate against, the extended type scale, and density presets.
+ */
+
+:root {
+  /* `--input` is the field BORDER colour (`border-input`). Several palettes make it a dark/opaque ink
+     that is wrong as a fill (it turned dark-mode fields cream, or dark-on-dark). Fills use
+     `bg-input-fill`, which defaults to `--input` so nothing changes until a theme sets `--input-fill`. */
+  --input-fill: var(--input);
+  /* --success / --warning (and their foregrounds) come from @vaultlint/brand/tokens.css. */
+
+  /* Contrast-safe brand/status text colours. These follow light-dark() through the brand tokens,
+     so they stay readable in "auto" mode when the OS is dark (the old `.dark`-only overrides missed it). */
+  --primary-readable: var(--primary-text);
+  --destructive-readable: var(--destructive-text);
+  --success-readable: var(--success-text);
+  --warning-readable: var(--warning-text);
+  --ring-readable: var(--primary-text);
+
+  --av-ui-radius-sm: var(--radius-sm, calc(var(--radius) * 0.667));
+  --av-ui-radius-md: var(--radius-md, var(--radius));
+  --av-ui-radius-lg: var(--radius-lg, calc(var(--radius) * 1.333));
+  --av-ui-radius-pill: 9999px;
+  --av-ui-control-xs: calc(var(--spacing, 0.25rem) * 6);
+  --av-ui-control-compact: calc(var(--spacing, 0.25rem) * 7);
+  --av-ui-control-sm: calc(var(--spacing, 0.25rem) * 8);
+  --av-ui-control-md: calc(var(--spacing, 0.25rem) * 9);
+  --av-ui-control-lg: calc(var(--spacing, 0.25rem) * 10);
+  --av-ui-motion-fast: var(--vl-motion-fast);
+  --av-ui-motion-normal: var(--vl-motion-normal);
+  --av-ui-easing: var(--vl-easing);
+  --av-ui-shadow-sm: var(--shadow-xs, 0 1px 2px rgb(0 0 0 / 0.06));
+  --av-ui-shadow-md: var(--shadow-sm, 0 2px 4px rgb(0 0 0 / 0.1));
+  --av-ui-shadow-lg: var(--shadow-md, 0 4px 8px rgb(0 0 0 / 0.15));
+}
+
+/* Foreground tokens are hand-tuned in @vaultlint/brand (navy ink, AA-checked) rather than derived
+   with contrast-color(), which would force pure black/white and diverge from the docs site. */
+
+/* Density presets. `hlmCard density="cozy|compact"` also reads `data-density` from an ancestor. */
+:root[data-density="cozy"] {
+  --spacing: 0.225rem;
+  --text-3xs: 0.625rem;
+  --text-2xs: 0.75rem;
+}
+
+:root[data-density="compact"] {
+  --spacing: 0.19rem;
+  --text-3xs: 0.5625rem;
+  --text-2xs: 0.6875rem;
+}
+
+@theme {
+  --text-2xs: 0.8125rem;
+  --text-2xs--line-height: 1.125rem;
+  --text-3xs: 0.6875rem;
+  --text-3xs--line-height: 1rem;
+  --text-4xs: 0.625rem;
+  --text-4xs--line-height: 0.875rem;
+}
+
+@theme inline {
+  --color-primary-readable: var(--primary-readable);
+  --color-destructive-readable: var(--destructive-readable);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-readable: var(--success-readable);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-readable: var(--warning-readable);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-info-text: var(--info-text);
+  --color-primary-text: var(--primary-text);
+  --color-success-text: var(--success-text);
+  --color-warning-text: var(--warning-text);
+  --color-destructive-text: var(--destructive-text);
+  --color-ring-readable: var(--ring-readable);
+}
+
+/* `hlm-progress` indicator stripes. */
+@keyframes aqua-progress-stripes {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 20px 0;
+  }
+}
+
+@theme inline {
+  --color-input-fill: var(--input-fill, var(--input));
+}

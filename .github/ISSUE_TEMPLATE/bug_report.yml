@@ -1,0 +1,74 @@
+name: Bug report
+description: Report a problem with vaultlint.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug. **Never attach or paste your real vault export.** If an example is needed, create a small synthetic file with entirely made-up entries and credentials.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: Describe the problem and what you were trying to do.
+      placeholder: A clear summary of the bug.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: List the steps or command that reproduce the problem. Remove any personal paths or sensitive data.
+      placeholder: |
+        1. Run ...
+        2. Choose ...
+        3. See error ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Include the exact error message, if any, after checking that it contains no passwords, usernames, notes, or other private data.
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: vaultlint version
+      placeholder: e.g. 1.2.3
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Operating system and, if relevant, the password manager and export format.
+      placeholder: e.g. Windows 11, Bitwarden JSON export
+    validations:
+      required: false
+
+  - type: textarea
+    id: sample
+    attributes:
+      label: Optional synthetic sample export
+      description: |
+        If useful, you may attach a small, fabricated export in a follow-up comment after submitting this issue. Use made-up entries and credentials. **Never attach or paste your real vault file or any real vault data, even if you remove some entries.** Do not include real names, usernames, URLs, notes, TOTP seeds, recovery codes, or other identifying details. Leave this blank if a sample is not needed.
+      placeholder: Describe the fabricated sample you can provide, or leave blank.
+    validations:
+      required: false

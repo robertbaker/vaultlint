@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>vaultlint — Local Vault Workspace</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0b1220" media="(prefers-color-scheme: dark)" />
+    <meta
+      name="description"
+      content="Audit, organize, and improve password vault exports privately in your browser."
+    />
+    <script>
+      try {
+        var t = localStorage.getItem("bw-theme");
+        var forced = t === "light" || t === "dark";
+        document.querySelector('meta[name="color-scheme"]').content = forced ? t : "light dark";
+        // Apply the theme before first paint so the pre-rendered shell doesn't flash.
+        if (forced) {
+          document.documentElement.setAttribute("data-theme", t);
+          document.documentElement.classList.toggle("dark", t === "dark");
+        }
+      } catch {}
+    </script>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="icon" type="image/png" sizes="64x64" href="favicon.png" />
+  </head>
+  <body class="style-nova bg-background text-foreground min-h-screen antialiased">
+    <app-root>
+      <!-- Pre-boot shell: mirrors app.html's landing layout so nothing shifts when Angular renders. -->
+      <div class="bg-background text-foreground landing-page flex min-h-screen flex-col">
+        <a href="#main-content" class="skip-link">Skip to main content</a>
+        <header class="app-header">
+          <div class="glass-nav landing-nav">
+            <a class="landing-brand" href="#main-content" aria-label="vaultlint home">
+              <img class="landing-brand-mark" src="favicon.svg" alt="" />
+              <span>vault<span class="landing-brand-accent">lint</span></span>
+            </a>
+            <nav aria-label="Main navigation" class="landing-nav-links">
+              <a href="#feature-highlights">Features</a>
+              <a href="#how-it-works">How it works</a>
+              <a href="#privacy-note">Privacy</a>
+              <a href="https://robertbaker.github.io/vaultlint/" target="_blank" rel="noopener"
+                >Docs</a
+              >
+            </nav>
+            <div class="landing-nav-end">
+              <span class="landing-version">v1.0.0</span>
+              <!-- Inert until the app boots: these open dialogs the app provides. -->
+              <button class="landing-preboot-btn" type="button" disabled>Quick tour</button>
+              <button class="landing-preboot-btn" type="button" disabled>What’s new</button>
+              <a class="landing-preboot-primary" href="#upload-vault">Import vault</a>
+            </div>
+          </div>
+        </header>
+        <main
+          id="main-content"
+          tabindex="-1"
+          class="landing-shell mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 pt-6 pb-10 outline-none sm:px-6"
+        >
+          <section class="landing-copy" aria-labelledby="landing-title">
+            <p class="landing-eyebrow">
+              <span aria-hidden="true"></span> Local-first · Open source · GPL-3.0
+            </p>
+            <h1 id="landing-title">Lint your vault.<br /><span>Keep it local.</span></h1>
+            <p>
+              Find weak or reused passwords, merge duplicates, and batch-edit entries. Your export
+              is parsed locally in this browser.
+            </p>
+          </section>
+          <div class="landing-upload-slot">
+            <p class="text-muted-foreground rounded-lg border px-4 py-3 text-sm" role="status">
+              Preparing your local vault tools…
+            </p>
+            <noscript>
+              <p class="rounded-lg border px-4 py-3 text-sm">
+                vaultlint runs entirely in your browser and needs JavaScript to read your export.
+                Enable JavaScript, or use the command-line tool: <code>vaultlint --help</code>.
+              </p>
+            </noscript>
+          </div>
+        </main>
+      </div>
+    </app-root>
+  </body>
+</html>

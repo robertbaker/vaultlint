@@ -1,0 +1,249 @@
+---
+title: Supported Formats
+description: All 20 password manager and browser export adapters supported by vaultlint.
+---
+
+`vaultlint` auto-detects and converts between unencrypted password manager exports via `@vaultlint/vault-formats`. Run `vaultlint --list-formats` in your terminal to print the live registry.
+
+import { Badge, Card, CardContent, CardHeader } from "../../../ui";
+
+## Format Matrix (20 Adapters)
+
+### Password Managers
+
+<div class="not-content vl-doc-grid">
+  <Card size="sm" class="vl-doc-card">
+    <CardHeader>
+      <h3>Bitwarden</h3>
+      <div class="flex flex-wrap gap-2">
+        <Badge tone="neutral" appearance="outline">
+          JSON
+        </Badge>
+        <Badge tone="neutral" appearance="outline">
+          CSV
+        </Badge>
+      </div>
+    </CardHeader>
+    <CardContent>
+      <p>
+        Unencrypted JSON and CSV. JSON exports with <code>encrypted: true</code> are rejected.
+      </p>
+    </CardContent>
+  </Card>
+  <Card size="sm" class="vl-doc-card">
+    <CardHeader>
+      <h3>1Password</h3>
+      <div class="flex flex-wrap gap-2">
+        <Badge tone="neutral" appearance="outline">
+          1PUX ZIP
+        </Badge>
+        <Badge tone="neutral" appearance="outline">
+          CSV
+        </Badge>
+      </div>
+    </CardHeader>
+    <CardContent>
+      <p>
+        Unencrypted <code>.1pux</code> archive and CSV exports.
+      </p>
+    </CardContent>
+  </Card>
+  <Card size="sm" class="vl-doc-card">
+    <CardHeader>
+      <h3>KeePass</h3>
+      <div class="flex flex-wrap gap-2">
+        <Badge tone="neutral" appearance="outline">
+          XML
+        </Badge>
+        <Badge tone="neutral" appearance="outline">
+          CSV
+        </Badge>
+      </div>
+    </CardHeader>
+    <CardContent>
+      <p>
+        KeePass 2.x XML and CSV. Encrypted <code>.kdbx</code> databases are rejected.
+      </p>
+    </CardContent>
+  </Card>
+  <Card size="sm" class="vl-doc-card">
+    <CardHeader>
+      <h3>Proton Pass</h3>
+      <div class="flex flex-wrap gap-2">
+        <Badge tone="neutral" appearance="outline">
+          JSON
+        </Badge>
+        <Badge tone="neutral" appearance="outline">
+          CSV
+        </Badge>
+        <Badge tone="neutral" appearance="outline">
+          ZIP
+        </Badge>
+      </div>
+    </CardHeader>
+    <CardContent>
+      <p>Unencrypted JSON, CSV, and ZIP. Encrypted exports are rejected.</p>
+    </CardContent>
+  </Card>
+  <Card size="sm" class="vl-doc-card">
+    <CardHeader>
+      <h3>Dashlane</h3>
+      <div class="flex flex-wrap gap-2">
+        <Badge tone="neutral" appearance="outline">
+          JSON
+        </Badge>
+        <Badge tone="neutral" appearance="outline">
+          CSV
+        </Badge>
+      </div>
+    </CardHeader>
+    <CardContent>
+      <p>Unencrypted JSON and CSV exports.</p>
+    </CardContent>
+  </Card>
+  <Card size="sm" class="vl-doc-card">
+    <CardHeader>
+      <h3>LastPass</h3>
+      <div class="flex flex-wrap gap-2">
+        <Badge tone="neutral" appearance="outline">
+          CSV
+        </Badge>
+      </div>
+    </CardHeader>
+    <CardContent>
+      <p>Standard LastPass CSV export.</p>
+    </CardContent>
+  </Card>
+  <Card size="sm" class="vl-doc-card">
+    <CardHeader>
+      <h3>NordPass</h3>
+      <div class="flex flex-wrap gap-2">
+        <Badge tone="neutral" appearance="outline">
+          CSV
+        </Badge>
+      </div>
+    </CardHeader>
+    <CardContent>
+      <p>Standard NordPass CSV export.</p>
+    </CardContent>
+  </Card>
+  <Card size="sm" class="vl-doc-card">
+    <CardHeader>
+      <h3>Enpass</h3>
+      <div class="flex flex-wrap gap-2">
+        <Badge tone="neutral" appearance="outline">
+          JSON
+        </Badge>
+        <Badge tone="neutral" appearance="outline">
+          CSV
+        </Badge>
+      </div>
+    </CardHeader>
+    <CardContent>
+      <p>Unencrypted JSON export and the preformatted login CSV template.</p>
+    </CardContent>
+  </Card>
+  <Card size="sm" class="vl-doc-card">
+    <CardHeader>
+      <h3>Keeper</h3>
+      <div class="flex flex-wrap gap-2">
+        <Badge tone="neutral" appearance="outline">
+          JSON
+        </Badge>
+        <Badge tone="neutral" appearance="outline">
+          CSV
+        </Badge>
+      </div>
+    </CardHeader>
+    <CardContent>
+      <p>Unencrypted JSON and standard CSV exports.</p>
+    </CardContent>
+  </Card>
+  <Card size="sm" class="vl-doc-card">
+    <CardHeader>
+      <h3>RoboForm</h3>
+      <div class="flex flex-wrap gap-2">
+        <Badge tone="neutral" appearance="outline">
+          CSV
+        </Badge>
+      </div>
+    </CardHeader>
+    <CardContent>
+      <p>Unencrypted CSV export. Cards and identities are not included in this CSV format.</p>
+    </CardContent>
+  </Card>
+</div>
+
+### Browsers
+
+<div class="not-content vl-doc-grid">
+  <Card size="sm" class="vl-doc-card">
+    <CardHeader>
+      <h3>Chrome, Edge, and Brave</h3>
+      <div class="flex flex-wrap gap-2">
+        <Badge tone="neutral" appearance="outline">
+          CSV
+        </Badge>
+      </div>
+    </CardHeader>
+    <CardContent>
+      <p>Chromium password manager CSV export.</p>
+    </CardContent>
+  </Card>
+  <Card size="sm" class="vl-doc-card">
+    <CardHeader>
+      <h3>Firefox</h3>
+      <div class="flex flex-wrap gap-2">
+        <Badge tone="neutral" appearance="outline">
+          CSV
+        </Badge>
+      </div>
+    </CardHeader>
+    <CardContent>
+      <p>Firefox Lockwise or password CSV export.</p>
+    </CardContent>
+  </Card>
+  <Card size="sm" class="vl-doc-card">
+    <CardHeader>
+      <h3>Safari</h3>
+      <div class="flex flex-wrap gap-2">
+        <Badge tone="neutral" appearance="outline">
+          CSV
+        </Badge>
+      </div>
+    </CardHeader>
+    <CardContent>
+      <p>Safari or macOS Passwords CSV export.</p>
+    </CardContent>
+  </Card>
+</div>
+
+Bramble’s `.bramble` backups and password-protected KeePass exports are encrypted, so vaultlint rejects them. To analyze a Bramble vault, export it as KeePass, open the `.kdbx` in KeePassXC, then export CSV or XML for vaultlint.
+
+For exact provider fields, schema validation rules, and import/export limitations, see the [format schema reference](../format-schemas/).
+
+## Cross-Format Conversion
+
+Specify `--output-format` to convert between providers while auditing or deduplicating in a single pass. vaultlint infers only the unambiguous `.1pux` and `.xml` targets; `.json` and `.csv` outputs default to the input format, so set the target explicitly for those:
+
+```bash
+# Convert a Bitwarden JSON export to 1Password 1PUX after merging duplicates
+vaultlint -i bitwarden.json -o migrated.1pux --auto-merge
+
+# Convert a RoboForm CSV to Enpass JSON
+vaultlint -i roboform.csv -o migrated.json --output-format enpass-json
+
+# Convert an Enpass JSON export to Keeper JSON
+vaultlint -i enpass.json -o keeper.json --output-format keeper-json
+
+# Convert Keeper JSON to RoboForm CSV
+vaultlint -i keeper.json -o roboform.csv --output-format roboform-csv
+```
+
+## Migration Coverage and Round-Trip Fidelity
+
+All registered formats have import and export adapters, making the registered source-to-target pairs available through vaultlint's canonical schema. This describes adapter availability; it does not mean every provider field can be represented by every target.
+
+Before export, vaultlint includes adapter-provided warnings for known limitations. The Web UI can compare those warnings across the supported target formats for the loaded vault. For a field-level check, `@vaultlint/vault-formats` exposes `inspectVaultRoundTrip(vault, format)`: it exports and parses the data in memory, then reports item counts and canonical field differences. The report contains field labels and counts, never field values. ZIP-based formats are inspected with the asynchronous parser.
+
+The package also exposes `getFormatConformanceMatrix()` for registered import/export capabilities and `getFormatPairCoverage()` for the supported canonical-schema format pairs. Round-trip inspection is a runtime check for a particular vault; it does not replace adapter-specific fixtures or guarantee that a target password manager will accept every export.

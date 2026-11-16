@@ -1,0 +1,160 @@
+---
+import rawChangelog from "../../../../CHANGELOG.md?raw";
+
+interface ChangelogCommit {
+  hash: string;
+  url: string | null;
+}
+
+interface ChangelogItem {
+  scope: string | null;
+  text: string;
+  commits: ChangelogCommit[];
+}
+
+interface ChangelogSection {
+  title: string;
+  items: ChangelogItem[];
+}
+
+interface ChangelogRelease {
+  version: string;
+  url: string | null;
+  date: string | null;
+  sections: ChangelogSection[];
+}
+
+function safeUrl(url: string | undefined): string | null {
+  if (!url || !/^https:\/\/[^\s)]+$/.test(url)) return null;
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === "https:" && !parsed.username && !parsed.password ? url : null;
+  } catch {
+    return null;
+  }
+}
+
+function parseReleaseHeading(heading: string): ChangelogRelease | null {
+  const bracketed = heading.match(/^\[([^\]]+)\]\(([^)]+)\)\s*(?:\(([^)]+)\))?/);
+  if (bracketed) {
+    return {
+      version: bracketed[1],
+      url: safeUrl(bracketed[2]),
+      date: bracketed[3] ?? null,
+      sections: [],
+    };
+  }
+  const plain = heading.match(/^(\S+)(?:\s+\(([^)]+)\))?/);
+  if (!plain) return null;
+  return { version: plain[1], url: null, date: plain[2] ?? null, sections: [] };
+}
+
+function parseChangelog(markdown: string): ChangelogRelease[] {
+  const releases: ChangelogRelease[] = [];
+  let current: ChangelogRelease | null = null;
+  let section: ChangelogSection | null = null;
+
+  for (const raw of markdown.split(/\r?\n/)) {
+    const line = raw.trim();
+    if (line.startsWith("## ")) {
+      current = parseReleaseHeading(line.slice(3).trim());
+      section = null;
+      if (current) releases.push(current);
+      continue;
+    }
+    if (!current) continue;
+    if (line.startsWith("### ")) {
+      section = { title: line.slice(4).trim(), items: [] };
+      current.sections.push(section);
+      continue;
+    }
+    if (!line.startsWith("* ") && !line.startsWith("- ")) continue;
+    if (!section) {
+      section = { title: "Changes", items: [] };
+      current.sections.push(section);
+    }
+
+    let text = line.slice(2).trim();
+    let scope: string | null = null;
+    const scopeMatch = text.match(/^\*\*([^*]+):\*\*\s*(.*)$/);
+    if (scopeMatch) {
+      scope = scopeMatch[1];
+      text = scopeMatch[2];
+    }
+
+    const commits: ChangelogCommit[] = [];
+    text = text
+      .replace(/\[([0-9a-f]{7,40})\]\(([^)]+)\)/gi, (_, hash: string, url: string) => {
+        commits.push({ hash: hash.slice(0, 7), url: safeUrl(url) });
+        return "";
+      })
+      .replace(/\(\s*,\s*/g, "(")
+      .replace(/,\s*\)/g, ")")
+      .replace(/\(\s*\)/g, "")
+      .trim();
+
+    section.items.push({ scope, text, commits });
+  }
+  return releases;
+}
+
+const releases = parseChangelog(rawChangelog);
+---
+
+<p>
+  Follows <a href="https://www.conventionalcommits.org/">Conventional Commits</a> and
+  <a href="https://semver.org/">Semantic Versioning</a>. Release entries are generated from
+  <a href="https://github.com/robertbaker/vaultlint/blob/main/CHANGELOG.md">CHANGELOG.md</a>.
+</p>
+
+{
+  releases.length === 0 ? (
+    <p>
+      No tagged releases have been published yet. View recent commits on{" "}
+      <a href="https://github.com/robertbaker/vaultlint/commits/main">GitHub</a>.
+    </p>
+  ) : (
+    releases.map((release) => (
+      <section>
+        <h2 id={`v${release.version}`}>
+          {release.url ? <a href={release.url}>{release.version}</a> : release.version}
+          {release.date && <span class="vl-release-date"> ({release.date})</span>}
+        </h2>
+        {release.sections.map((sec) => (
+          <div>
+            <h3>{sec.title}</h3>
+            <ul>
+              {sec.items.map((item) => (
+                <li>
+                  {item.scope && <strong>{item.scope}: </strong>}
+                  {item.text}
+                  {item.commits.length > 0 && (
+                    <span>
+                      {" "}
+                      (
+                      {item.commits.map((c, idx) => (
+                        <>
+                          {idx > 0 && ", "}
+                          {c.url ? <a href={c.url}>{c.hash}</a> : <code>{c.hash}</code>}
+                        </>
+                      ))}
+                      )
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </section>
+    ))
+  )
+}
+
+<style>
+  .vl-release-date {
+    font-weight: 400;
+    font-size: 0.85em;
+    color: var(--sl-color-gray-3);
+  }
+</style>

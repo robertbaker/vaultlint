@@ -1,0 +1,106 @@
+---
+title: Web UI Guide
+description: Walkthrough of the vaultlint Web UI tabs and workflows.
+---
+
+import { Badge, Card, CardContent, CardHeader } from "../../../ui";
+
+The hosted Web App runs in your browser. You can also run the same interface locally with `vaultlint --ui`.
+
+It accepts the same 20 file formats as the CLI for password manager and browser exports. See [supported formats](../../cli/formats/) for the list and [format schemas](../../cli/format-schemas/) for provider-specific columns and JSON fields.
+
+## Loading a Vault
+
+1. Open the [Web App](../../app/) or run `vaultlint --ui` locally and visit `http://127.0.0.1:4173`.
+2. Choose or drop an unencrypted export, or click **Try the sample vault**. When running locally, the **Local CLI Bridge** can read Bitwarden, LastPass, Dashlane, Keeper, 1Password, Proton Pass, and NordPass CLIs after you sign in and unlock them. The hosted Web App cannot access CLIs installed on your device.
+
+## Sections
+
+Each section opens with a heading that names it and summarizes what it does. The **Local-first workspace** note beside it is a reminder that nothing leaves your browser unless you start an opt-in network action.
+
+<div class="not-content vl-doc-grid">
+  <Card size="sm" class="vl-doc-card">
+    <CardHeader>
+      <Badge tone="primary" appearance="soft">
+        01 · Items
+      </Badge>
+      <h3>Manage entries</h3>
+    </CardHeader>
+    <CardContent>
+      <p>
+        Search, filter, and sort your vault. Add, edit, or delete entries, or select several to
+        move, regenerate passwords, or remove them together.
+      </p>
+    </CardContent>
+  </Card>
+  <Card size="sm" class="vl-doc-card">
+    <CardHeader>
+      <Badge tone="info" appearance="soft">
+        02 · Review
+      </Badge>
+      <h3>Review audit findings</h3>
+    </CardHeader>
+    <CardContent>
+      <p>
+        Run <strong>Vault checks</strong> with the <code>recommended</code>, <code>strict</code>, or
+        <code>minimal</code> ruleset, save named lint profiles, import or export
+        <code>vaultlint.config.json</code>, and apply safe or all autofixes. Inspect duplicates and
+        review password and URI findings. Breach, redirect, and mobile URI checks only make network
+        requests when you start them.
+      </p>
+    </CardContent>
+  </Card>
+  <Card size="sm" class="vl-doc-card">
+    <CardHeader>
+      <Badge tone="success" appearance="soft">
+        03 · Organize
+      </Badge>
+      <h3>Apply batch changes</h3>
+    </CardHeader>
+    <CardContent>
+      <p>
+        Preview regex edits, normalize names and URIs, and manage domain mappings. Use{" "}
+        <strong>Merge vault</strong> to load a second unencrypted export, preview match confidence
+        and field differences, choose values for each conflict, and export a sanitized decision
+        report. <strong>FIDO import</strong> adds <code>fidoKeys</code> from an unencrypted Aegis
+        JSON export.
+      </p>
+    </CardContent>
+  </Card>
+  <Card size="sm" class="vl-doc-card">
+    <CardHeader>
+      <Badge tone="warning" appearance="soft">
+        04 · AI
+      </Badge>
+      <h3>Optional AI help</h3>
+    </CardHeader>
+    <CardContent>
+      <p>
+        Run optional AI folder suggestions, duplicate detection, missing URI suggestions, and naming
+        or folder reviews. Only item names and hostnames are sent, and only when you start an
+        action.
+      </p>
+    </CardContent>
+  </Card>
+  <Card size="sm" class="vl-doc-card">
+    <CardHeader>
+      <Badge tone="neutral" appearance="outline">
+        05 · Activity
+      </Badge>
+      <h3>Review session changes</h3>
+    </CardHeader>
+    <CardContent>
+      <p>Track edits made during the session and export a sanitized JSON or Markdown report.</p>
+    </CardContent>
+  </Card>
+</div>
+
+## Undo, Redo & Export
+
+Use **Undo** (`Ctrl+Z`) or **Redo** (`Ctrl+Y`) to review edits. Choose an export format in the header and click **Export** to download the updated vault.
+
+Press `/` to jump to search in the Items section. Known export data-loss warnings appear before a download, and **Compare all supported export formats** shows what each format would keep or drop without exposing vault values.
+
+## Keeping Work Across a Refresh
+
+By default nothing is stored. You can opt in to an encrypted local recovery copy that expires after 8 hours without edits and can be removed at any time. See the [User Guide](https://github.com/robertbaker/vaultlint/blob/main/docs/USER_GUIDE.md#local-recovery-copy) for exactly what is kept and the limits of that protection.

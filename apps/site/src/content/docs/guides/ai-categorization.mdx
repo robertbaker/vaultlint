@@ -1,0 +1,61 @@
+---
+title: AI Folder Categorization (Opt-In)
+description: Organize uncategorized vault items using OpenAI, Anthropic, OpenRouter, Grok, Gemini, or local Ollama.
+---
+
+import { Badge, Card, CardContent, CardHeader } from "../../../ui";
+
+`vaultlint` includes optional AI folder categorization via `@vaultlint/ai`. **It is disabled by default** and never runs unless you explicitly enable it.
+
+## What Gets Sent
+
+When an AI action runs, `vaultlint` strips sensitive fields before sending the request:
+
+<div class="not-content vl-doc-grid">
+  <Card size="sm" class="vl-doc-card">
+    <CardHeader>
+      <Badge tone="info" appearance="soft">
+        Sent
+      </Badge>
+      <h3>Limited context</h3>
+    </CardHeader>
+    <CardContent>
+      <p>
+        Only item names and extracted hostnames. Item positions used to match responses to the
+        current vault stay in the browser and are not sent.
+      </p>
+    </CardContent>
+  </Card>
+  <Card size="sm" class="vl-doc-card">
+    <CardHeader>
+      <Badge tone="success" appearance="soft">
+        Kept private
+      </Badge>
+      <h3>Vault secrets</h3>
+    </CardHeader>
+    <CardContent>
+      <p>Passwords, usernames, TOTP secrets, FIDO keys, custom fields, and notes are never sent.</p>
+    </CardContent>
+  </Card>
+</div>
+
+## Supported Providers
+
+| Provider ID  | Notes                                           |
+| ------------ | ----------------------------------------------- |
+| `openai`     | Default provider when `--enable-ai` is passed   |
+| `anthropic`  | Claude models via Anthropic API                 |
+| `openrouter` | Multi-model routing via OpenRouter              |
+| `grok`       | xAI Grok models                                 |
+| `gemini`     | Google Gemini models                            |
+| `ollama`     | Local inference when Ollama runs on this device |
+
+## CLI Usage
+
+```bash
+# Categorize folders using OpenAI (reads API key from environment or --ai-api-key)
+vaultlint -i vault.json -o vault-categorized.json --enable-ai --ai-provider openai
+
+# Run with a local Ollama server
+vaultlint -i vault.json -o vault-categorized.json --enable-ai --ai-provider ollama --ai-model llama3.2 --ai-base-url http://127.0.0.1:11434
+```

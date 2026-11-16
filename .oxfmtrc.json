@@ -1,0 +1,15 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "sortImports": true,
+  "sortTailwindcss": true,
+  "jsdoc": true,
+  "ignorePatterns": [
+    "**/node_modules/**",
+    "**/.*/**",
+    "**/.*",
+    "**/dist/**",
+    "**/build/**",
+    "**/test-results/**",
+    "**/playwright-report/**"
+  ]
+}

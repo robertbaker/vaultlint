@@ -1,0 +1,125 @@
+---
+title: Privacy Policy
+description: How vaultlint handles your data, local storage, cookies, and opt-in network requests.
+---
+
+import { Badge, Card, CardContent, CardHeader } from "../../../ui";
+
+This page describes what the Web UI stores and which network requests it makes.
+
+## Data handling
+
+<div class="not-content vl-doc-grid">
+  <Card size="sm" class="vl-doc-card">
+    <CardHeader>
+      <Badge tone="success" appearance="soft">
+        On device
+      </Badge>
+      <h3>Local processing</h3>
+    </CardHeader>
+    <CardContent>
+      <p>
+        Parsing, auditing, editing, conversion, and password generation run on your machine in the
+        CLI or in your browser in the Web UI. Vault files are not uploaded to a vaultlint server.
+      </p>
+    </CardContent>
+  </Card>
+  <Card size="sm" class="vl-doc-card">
+    <CardHeader>
+      <Badge tone="neutral" appearance="outline">
+        In memory
+      </Badge>
+      <h3>Secrets stay in the session</h3>
+    </CardHeader>
+    <CardContent>
+      <p>
+        Plaintext vault contents and AI provider API keys entered in the Web UI stay in memory and
+        are discarded when you close or reload the tab.
+      </p>
+    </CardContent>
+  </Card>
+</div>
+
+## Cookies & Local Storage
+
+Neither the documentation site nor the Web UI uses cookies. The Web UI uses <code>localStorage</code> only for non-sensitive preferences:
+
+<div class="not-content vl-doc-grid">
+  <Card size="sm" class="vl-doc-card">
+    <CardHeader>
+      <h3>Theme</h3>
+    </CardHeader>
+    <CardContent>
+      <p>
+        <code>bw-theme</code> saves your display preference.
+      </p>
+    </CardContent>
+  </Card>
+  <Card size="sm" class="vl-doc-card">
+    <CardHeader>
+      <h3>Domain mappings</h3>
+    </CardHeader>
+    <CardContent>
+      <p>
+        <code>bw-domain-mappings</code> stores hostnames only.
+      </p>
+    </CardContent>
+  </Card>
+  <Card size="sm" class="vl-doc-card">
+    <CardHeader>
+      <h3>Lint profiles</h3>
+    </CardHeader>
+    <CardContent>
+      <p>
+        <code>vaultlint-lint-profile</code> and <code>vaultlint-named-lint-profiles</code> store
+        lint rule severities only.
+      </p>
+    </CardContent>
+  </Card>
+  <Card size="sm" class="vl-doc-card">
+    <CardHeader>
+      <h3>Changelog state</h3>
+    </CardHeader>
+    <CardContent>
+      <p>
+        Saves the last version you used, the version whose changelog you opened, and the most
+        recently fetched release notes.
+      </p>
+    </CardContent>
+  </Card>
+  <Card size="sm" class="vl-doc-card">
+    <CardHeader>
+      <h3>Recovery copy choice</h3>
+    </CardHeader>
+    <CardContent>
+      <p>
+        <code>vaultlint-recovery-copy</code> remembers only whether the optional recovery copy is on
+        (off by default). If you turn it on, an AES-GCM encrypted copy of the open vault is kept in
+        IndexedDB; see the{" "}
+        <a href="https://github.com/robertbaker/vaultlint/blob/main/docs/USER_GUIDE.md#local-recovery-copy">
+          user guide
+        </a>
+        .
+      </p>
+    </CardContent>
+  </Card>
+</div>
+
+You can clear these anytime from your browser settings.
+
+## Opt-In Network Requests
+
+All network features are disabled by default and only run when you explicitly trigger them:
+
+| Feature                                                      | Data Sent                                                                                                                                            | Destination                                                 |
+| ------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| **HIBP Breach Check**                                        | First 5 characters of a SHA-1 password hash (k-anonymity)                                                                                            | `api.pwnedpasswords.com`                                    |
+| **AI Assistant / Categorization**                            | Item names and hostnames only (never item IDs, folder names, passwords, usernames, TOTP secrets, FIDO keys, or notes)                                | Your selected AI provider, or `127.0.0.1` when using Ollama |
+| **Vendor CLI Import / Push** (`--from-cli`, `--push-to-cli`) | Nothing from `vaultlint`. It runs the vendor CLI you already installed and signed in to, which talks to that vendor's servers as it normally does    | The vendor's own servers                                    |
+| **Redirect & Dead-Link Check**                               | HTTP `HEAD`/`GET` requests to each stored `http(s)` login URL, including its path and query; embedded `user:password@` credentials are removed first | Target login domains                                        |
+| **Mobile App URI Validation**                                | App package/bundle IDs from `androidapp://` and `iosapp://` URIs                                                                                     | App store lookup endpoints                                  |
+| **What's New Changelog**                                     | Standard `GET` request when checking release notes in the Web UI                                                                                     | `raw.githubusercontent.com`                                 |
+
+## Hosted Site
+
+If you access the hosted documentation or Web App on GitHub Pages, GitHub may collect standard HTTP request logs in accordance with the GitHub Privacy Statement. If you want zero third-party HTTP requests, run the CLI (`vaultlint`) or local Web UI (`vaultlint --ui`) offline.

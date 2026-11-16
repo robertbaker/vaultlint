@@ -1,0 +1,23 @@
+---
+title: Aegis FIDO Import
+description: Import fidoKeys from unencrypted Aegis JSON exports into your vault without duplicates.
+---
+
+Import FIDO keys (`fidoKeys`) from an unencrypted **Aegis Authenticator** JSON export.
+
+## Web UI Workflow
+
+1. Open **Aegis FIDO Import** in the Web UI.
+2. Select or drop your unencrypted Aegis JSON export.
+3. The import adds the keys to matching vault items and skips duplicate keys.
+4. In **Items**, use the **FIDO** filter to find entries with keys.
+
+## CLI Workflow
+
+```bash
+# Import Aegis FIDO keys into your vault and save to a new file
+vaultlint -i vault.json -o vault-with-fido.json --aegis-import aegis-export.json
+
+# List items with FIDO keys
+vaultlint -i vault-with-fido.json --list --filter fido
+```

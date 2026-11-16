@@ -1,0 +1,559 @@
+@import "tailwindcss";
+@import "@vaultlint/brand/tokens.css";
+@import "@fontsource-variable/bricolage-grotesque/wght.css";
+@import "tw-animate-css";
+@custom-variant data-open (&:where([data-state="open"], [data-open]));
+@custom-variant data-closed (&:where([data-state="closed"], [data-closed]));
+/*
+ * `dark:` utilities follow the app's theme choice (ThemeService sets data-theme and .dark on the
+ * root), not just the OS preference; "auto" (no data-theme) still follows the OS.
+ */
+@custom-variant dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(:root:not([data-theme]), :root:not([data-theme]) *) {
+      @slot;
+    }
+  }
+}
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+@utility flex-wrap-balance {
+  flex-wrap: wrap;
+  flex-wrap: balance;
+}
+@utility content-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 48px;
+}
+@import "./styles/spartan-nova.css";
+@import "./styles/house-tokens.css";
+@import "./app/app.css";
+
+:root {
+  /* Brand colours, fonts, and radius come from @vaultlint/brand/tokens.css (shared with the site).
+     Only the spartan-specific aliases live here. */
+  --target-size: 24px;
+  accent-color: var(--primary);
+  interpolate-size: allow-keywords;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  --scrollbar-thumb: light-dark(oklch(0.62 0.01 258), oklch(0.45 0.02 258));
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+  --input-fill: light-dark(oklch(1 0 0), oklch(0.2 0.028 258));
+  --sidebar: light-dark(oklch(0.985 0.003 255), oklch(0.2 0.028 258));
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: var(--accent);
+  --sidebar-accent-foreground: var(--accent-foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
+
+  &:has(> head > meta[name="color-scheme"][content="dark"]) {
+    color-scheme: dark;
+  }
+
+  &:has(> head > meta[name="color-scheme"][content="light"]) {
+    color-scheme: light;
+  }
+}
+
+@media (pointer: coarse) {
+  :root {
+    --target-size: 44px;
+  }
+}
+
+/* Registered properties must stay top-level so scroll-driven fades and progress rings interpolate smoothly. */
+@property --fade-start {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --fade-end {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --value {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+@layer base {
+  body {
+    overflow-wrap: break-word;
+  }
+
+  :where(a, code) {
+    overflow-wrap: anywhere;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  dialog {
+    /* Tailwind's preflight zeroes margins, which would pin modal dialogs to the top-left corner. */
+    margin: auto;
+    overscroll-behavior: contain;
+
+    @supports (corner-shape: squircle) {
+      corner-shape: squircle;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      opacity: 0;
+      translate: 0 8px;
+      transition:
+        opacity 180ms ease-out,
+        translate 180ms ease-out,
+        display 180ms allow-discrete,
+        overlay 180ms allow-discrete;
+      transition-behavior: allow-discrete;
+
+      &[open] {
+        opacity: 1;
+        translate: 0 0;
+
+        @starting-style {
+          opacity: 0;
+          translate: 0 8px;
+        }
+      }
+    }
+  }
+  dialog:modal {
+    overscroll-behavior: contain;
+  }
+
+  dialog::backdrop {
+    overflow: hidden;
+    overscroll-behavior: contain;
+  }
+}
+
+.touch-target {
+  min-block-size: var(--target-size);
+  min-inline-size: var(--target-size);
+}
+
+.auto-grow-textarea {
+  field-sizing: content;
+  width: 100%;
+  height: auto;
+  min-block-size: 3.5lh;
+  max-block-size: 10lh;
+}
+
+.validated-field:is(:user-invalid, [aria-invalid="true"]) {
+  border-color: var(--destructive);
+}
+
+/* Horizontal scroll container with scroll-driven end-fade masks. */
+.scroll-fade-x {
+  overflow-x: auto;
+  scrollbar-width: none;
+  scroll-padding-inline: 1.5rem;
+  --fade-size: 2rem;
+  --fade-dir: right;
+  --fade-start-pos: 0;
+  --fade-end-pos: 100%;
+  mask:
+    linear-gradient(black, black) no-clip subtract,
+    linear-gradient(to var(--fade-dir), black, transparent) var(--fade-start-pos) 0 /
+      var(--fade-start) 100% no-repeat no-clip,
+    linear-gradient(to var(--fade-dir), transparent, black) var(--fade-end-pos) 0 / var(--fade-end)
+      100% no-repeat no-clip;
+  animation:
+    reveal-fade-start linear both,
+    hide-fade-end linear both;
+  animation-timeline: scroll(self inline);
+  animation-range:
+    0 var(--fade-size),
+    calc(100% - var(--fade-size)) 100%;
+
+  &:dir(rtl) {
+    --fade-dir: left;
+    --fade-start-pos: 100%;
+    --fade-end-pos: 0;
+  }
+}
+
+.scroll-fade-x::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes reveal-fade-start {
+  to {
+    --fade-start: var(--fade-size);
+  }
+}
+
+@keyframes hide-fade-end {
+  from {
+    --fade-end: var(--fade-size);
+  }
+}
+
+/* Vertical scroll container with sticky edge shadows. */
+.scroll-shadow-y {
+  overflow-y: auto;
+  container-type: scroll-state;
+}
+
+.scroll-shadow-y::before,
+.scroll-shadow-y::after {
+  content: "";
+  display: block;
+  position: sticky;
+  block-size: 0.75rem;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.scroll-shadow-y::before {
+  inset-block-start: 0;
+  margin-block-end: -0.75rem;
+  background: radial-gradient(
+    farthest-side at 50% 0,
+    light-dark(rgb(0 0 0 / 0.14), rgb(0 0 0 / 0.45)),
+    transparent
+  );
+}
+
+.scroll-shadow-y::after {
+  inset-block-end: 0;
+  margin-block-start: -0.75rem;
+  background: radial-gradient(
+    farthest-side at 50% 100%,
+    light-dark(rgb(0 0 0 / 0.14), rgb(0 0 0 / 0.45)),
+    transparent
+  );
+}
+
+@container scroll-state(scrollable: block-start) {
+  .scroll-shadow-y::before {
+    opacity: 1;
+  }
+}
+
+@container scroll-state(scrollable: block-end) {
+  .scroll-shadow-y::after {
+    opacity: 1;
+  }
+}
+
+@supports not (container-type: scroll-state) {
+  .scroll-shadow-y::before,
+  .scroll-shadow-y::after {
+    animation: show-scroll-shadow linear both;
+    animation-timeline: scroll();
+  }
+
+  .scroll-shadow-y::before {
+    animation-range: 0 2rem;
+  }
+
+  .scroll-shadow-y::after {
+    animation-direction: reverse;
+    animation-range: calc(100% - 2rem) 100%;
+  }
+}
+
+@keyframes show-scroll-shadow {
+  to {
+    opacity: 1;
+  }
+}
+
+/* Native <progress> ring with Firefox mask-image fallback, reduced-motion, and forced-colors support. */
+.progress-ring-wrapper {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+progress.progress-ring {
+  --size: 3.75rem;
+  --thickness: 6px;
+  --track-color: var(--muted);
+  --fill-color: var(--primary);
+  appearance: none;
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  background: conic-gradient(var(--fill-color) calc(var(--value) * 1%), var(--track-color) 0);
+  background-clip: border-area;
+  border: var(--thickness) solid transparent;
+  background-origin: border-box;
+  transition: --value 0s ease-in-out;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition-duration: 0.4s;
+  }
+
+  @media (forced-colors: active) {
+    forced-color-adjust: none;
+    --fill-color: CanvasText;
+    --track-color: Canvas;
+  }
+}
+
+/* Separate rules: an unknown vendor pseudo in a selector list would invalidate the whole rule. */
+progress.progress-ring::-webkit-progress-bar,
+progress.progress-ring::-webkit-progress-value {
+  display: none;
+  background: none;
+}
+
+progress.progress-ring::-moz-progress-bar {
+  display: none;
+  background: none;
+}
+
+@supports not (background-clip: border-area) {
+  progress.progress-ring {
+    border: 0;
+    mask-image: radial-gradient(
+      transparent calc(50% - var(--thickness)),
+      black calc(50% - var(--thickness) + 0.5px)
+    );
+  }
+}
+
+.progress-ring-content {
+  position: absolute;
+  pointer-events: none;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Native popovers tethered to trigger via CSS Anchor Positioning with @supports fallback for Firefox. */
+[popover].anchored-popover:not(:popover-open) {
+  display: none;
+}
+
+[popover].anchored-popover {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--popover);
+  color: var(--popover-foreground);
+  padding: 0.75rem;
+  box-shadow: var(--av-ui-shadow-lg);
+  max-inline-size: calc(100dvw - 1.5rem);
+  max-block-size: calc(100dvh - 5rem);
+  overflow: auto;
+  overscroll-behavior: contain;
+
+  @media (prefers-reduced-motion: no-preference) {
+    opacity: 0;
+    translate: 0 -4px;
+    transition:
+      opacity 150ms ease-out,
+      translate 150ms ease-out,
+      display 150ms ease-out,
+      overlay 150ms ease-out;
+    transition-behavior: allow-discrete;
+
+    &:popover-open {
+      opacity: 1;
+      translate: 0 0;
+
+      @starting-style {
+        opacity: 0;
+        translate: 0 -4px;
+      }
+    }
+  }
+}
+
+@supports (position-area: block-end) {
+  [popover].anchored-popover {
+    inset: auto;
+    margin: 0.5rem 0 0;
+    position-area: block-end span-inline-start;
+    position-try-fallbacks:
+      flip-block,
+      flip-inline,
+      flip-block flip-inline;
+    transform-origin: top right;
+  }
+}
+
+@supports not (position-area: block-end) {
+  [popover].anchored-popover {
+    position: fixed;
+    inset: 4.5rem 0.75rem auto auto;
+    margin: 0;
+  }
+}
+
+/* Smooth disclosure animation for native <details> groups. */
+.animated-details::details-content {
+  interpolate-size: allow-keywords;
+  overflow: clip;
+  contain: layout;
+}
+
+.animated-details:not([open])::details-content {
+  block-size: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .animated-details::details-content {
+    transition:
+      block-size 220ms ease,
+      content-visibility 220ms ease,
+      display 220ms ease;
+    transition-behavior: allow-discrete;
+  }
+}
+
+/* Responsive table that converts to stacked cards inside narrow containers. */
+.responsive-table-wrap {
+  overflow: auto;
+  max-inline-size: 100%;
+  container-type: inline-size;
+}
+
+@container (width < 38rem) {
+  .responsive-table-wrap table,
+  .responsive-table-wrap thead,
+  .responsive-table-wrap tbody,
+  .responsive-table-wrap tr,
+  .responsive-table-wrap th,
+  .responsive-table-wrap td {
+    display: block;
+  }
+
+  .responsive-table-wrap thead {
+    display: none;
+  }
+
+  .responsive-table-wrap tr {
+    margin-block-end: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--card);
+    padding: 0.75rem;
+  }
+
+  .responsive-table-wrap tbody th {
+    padding: 0 0 0.4rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .responsive-table-wrap tbody td {
+    padding: 0.45rem 0 0;
+  }
+
+  .responsive-table-wrap tbody td[data-label]::before {
+    content: attr(data-label) ": ";
+    font-weight: 600;
+    color: var(--muted-foreground);
+  }
+}
+
+.skip-link:where(:not(:focus-within, :active)) {
+  position: absolute;
+  clip-path: inset(50%);
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  white-space: nowrap;
+}
+
+.skip-link:focus-visible {
+  position: fixed;
+  inset-block-start: 0.75rem;
+  inset-inline-start: 0.75rem;
+  z-index: 100;
+  border-radius: var(--radius-md);
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  padding: 0.5rem 0.875rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  box-shadow: var(--av-ui-shadow-lg);
+}
+
+.toast-entry {
+  @supports (corner-shape: squircle) {
+    corner-shape: squircle;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    opacity: 1;
+    translate: 0 0;
+    transition:
+      opacity 180ms ease-out,
+      translate 180ms ease-out;
+
+    @starting-style {
+      opacity: 0;
+      translate: 0 10px;
+    }
+  }
+}
+
+@theme inline {
+  --font-sans: var(--vl-font-sans);
+  --font-mono: var(--vl-font-mono);
+  --font-heading: var(--vl-font-brand);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}

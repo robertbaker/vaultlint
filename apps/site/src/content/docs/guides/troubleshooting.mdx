@@ -1,0 +1,40 @@
+---
+title: Troubleshooting
+description: "Fix common vaultlint problems, including rejected exports, port conflicts, Node version errors, and missing Web UI files."
+---
+
+## "Encrypted export" is rejected
+
+vaultlint only reads unencrypted exports. Locked Bitwarden or Proton Pass JSON (`encrypted: true`), KeePass `.kdbx`, and Bramble `.bramble` files are refused on purpose so they are never corrupted. Export an unencrypted copy from your password manager instead. For Bramble, open its KeePass export in KeePassXC and export CSV or XML. Delete unencrypted exports when you are done.
+
+## The format is not detected
+
+Pass the format explicitly with `--input-format <format>`, and run `vaultlint --list-formats` to see valid names. Header names and JSON fields for each provider are in the [format schema reference](../../cli/format-schemas/).
+
+## Node.js version errors
+
+The published package needs Node.js 22.12 or newer. Check with `node --version`. Running from a source checkout needs Bun 1.4 or newer.
+
+## The Web UI port is already in use
+
+Start the local server on another port:
+
+```bash
+vaultlint --ui --port 4200
+```
+
+## "Could not locate built Web UI"
+
+This appears only when running from a source checkout. Build the Web UI first with `bun run build:web`, or use `bun run ui`, which builds and starts it. The npm package already bundles the built UI.
+
+## The Local CLI Bridge is unavailable
+
+The hosted Web App cannot reach password manager CLIs installed on your device. Run `vaultlint --ui` locally, sign in and unlock the provider CLI, then use the bridge. See the [CLI reference](../../cli/commands/#vendor-cli-integration).
+
+## My changes were not saved
+
+The CLI never overwrites your input unless you pass `--in-place`, and `--dry-run` writes nothing. Use `-o <path>` to write a cleaned copy, and `--backup` to keep a `.bak` before overwriting. In the Web UI, nothing is written until you click **Export**.
+
+## Network checks fail or hang
+
+Breach (HIBP), redirect, mobile app lookup, and AI features are opt-in and need internet access. Everything else works offline. See the [privacy policy](../../security/privacy-policy/) for what each check sends.

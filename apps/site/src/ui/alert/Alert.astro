@@ -1,0 +1,23 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import type { VariantProps } from "tailwind-variants";
+
+import { alert } from "./variants";
+import { withPalette, type PaletteProps } from "../../lib/palette";
+
+type Props = (HTMLAttributes<"div"> & VariantProps<typeof alert>) & PaletteProps;
+
+const { variant, role, class: className, ...rest } = Astro.props;
+
+const inferredRole = role ?? (variant === "error" || variant === "warning" ? "alert" : "status");
+---
+
+<div
+  {...withPalette(rest)}
+  data-sw-alert
+  class={alert({ variant, class: className })}
+  role={inferredRole}
+  data-slot="alert"
+>
+  <slot />
+</div>

@@ -1,0 +1,82 @@
+---
+title: Batch Editing & Domain Mappings
+description: Regex search/replace, target modes, name/URI normalization, and domain mappings in vaultlint.
+---
+
+import { Badge, Card, CardContent, CardHeader } from "../../../ui";
+
+Use regex rules to change names, URIs, usernames, or notes across multiple entries. Preview the changes before applying them, and undo them if needed.
+
+## Regex Batch Editing
+
+Regex search and replace supports four fields:
+
+<div class="not-content flex flex-wrap gap-2">
+  <Badge tone="primary" appearance="outline">
+    <code>name</code>
+  </Badge>
+  <Badge tone="primary" appearance="outline">
+    <code>uri</code>
+  </Badge>
+  <Badge tone="primary" appearance="outline">
+    <code>username</code>
+  </Badge>
+  <Badge tone="primary" appearance="outline">
+    <code>notes</code>
+  </Badge>
+</div>
+
+### Target Modes
+
+Use `--target-mode` in the CLI or the target mode selector in the Web UI to choose which values to edit:
+
+| Mode        | Behavior                                                      |
+| ----------- | ------------------------------------------------------------- |
+| `all`       | Evaluate and apply replacement to all matching items          |
+| `non-empty` | Only modify items where the target field already has a value  |
+| `empty`     | Only populate items where the target field is currently empty |
+| `clear`     | Clear the target field on matching items                      |
+
+### CLI Examples
+
+```bash
+# Preview upgrading http:// URIs to https:// without writing changes
+vaultlint -i vault.json --batch-edit --field uri --pattern "^http://" --replacement "https://" --dry-run
+
+# Normalize item names (lowercase) and URIs (origin-only)
+vaultlint -i vault.json -o vault-clean.json --normalize
+```
+
+## Domain Mappings
+
+Map subdomains such as `accounts.example.com` and `login.example.com` to a parent domain such as `example.com`:
+
+<div class="not-content vl-doc-grid">
+  <Card size="sm" class="vl-doc-card">
+    <CardHeader>
+      <Badge tone="info" appearance="soft">
+        Web UI
+      </Badge>
+      <h3>Manage mappings in the app</h3>
+    </CardHeader>
+    <CardContent>
+      <p>
+        Use the <strong>Batch edit & domains</strong> tab (under <strong>Organize</strong>). Rules
+        are stored locally in <code>localStorage</code> and contain hostnames, not secrets.
+      </p>
+    </CardContent>
+  </Card>
+  <Card size="sm" class="vl-doc-card">
+    <CardHeader>
+      <Badge tone="neutral" appearance="soft">
+        CLI
+      </Badge>
+      <h3>Load a JSON mapping file</h3>
+    </CardHeader>
+    <CardContent>
+      <p>
+        Pass the file path with <code>--domain-mappings &lt;path&gt;</code>.
+      </p>
+    </CardContent>
+  </Card>
+</div>

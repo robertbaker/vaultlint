@@ -1,0 +1,600 @@
+@import "tailwindcss";
+@import "@vaultlint/brand/tokens.css";
+@import "@fontsource-variable/bricolage-grotesque/wght.css";
+
+/* ───────────────────────────────────────────────────────────
+   vaultlint brand
+   Ink navy surfaces · teal "verified" accent · amber "flag".
+   ─────────────────────────────────────────────────────────── */
+:root {
+  /* Raw brand colours, fonts, and status tokens come from @vaultlint/brand/tokens.css, shared with
+     the Web UI. This file only maps them onto Starlight and Starwind. */
+  scrollbar-gutter: stable;
+  --sl-font: var(--vl-font-sans);
+  --sl-font-mono: var(--vl-font-mono);
+
+  /* Starlight: dark (default) */
+  --sl-color-accent-low: oklch(0.27 0.06 188);
+  --sl-color-accent: var(--vl-teal-400);
+  --sl-color-accent-high: oklch(0.88 0.1 178);
+  --sl-color-white: oklch(0.97 0.006 255);
+  --sl-color-gray-1: oklch(0.88 0.012 255);
+  --sl-color-gray-2: oklch(0.78 0.015 255);
+  --sl-color-gray-3: oklch(0.62 0.02 255);
+  --sl-color-gray-4: oklch(0.43 0.028 257);
+  --sl-color-gray-5: oklch(0.3 0.03 258);
+  --sl-color-gray-6: oklch(0.22 0.028 258);
+  --sl-color-gray-7: oklch(0.18 0.026 258);
+  --sl-color-black: var(--vl-ink);
+  --sl-shadow-md: 0 8px 24px oklch(0 0 0 / 35%);
+}
+
+:root[data-theme="light"] {
+  --sl-color-accent-low: oklch(0.93 0.05 180);
+  --sl-color-accent: var(--primary);
+  --sl-color-accent-high: oklch(0.36 0.08 188);
+  --sl-color-white: oklch(0.18 0.03 258);
+  --sl-color-gray-1: oklch(0.26 0.03 258);
+  --sl-color-gray-2: oklch(0.36 0.03 258);
+  --sl-color-gray-3: oklch(0.5 0.025 258);
+  --sl-color-gray-4: oklch(0.68 0.02 258);
+  --sl-color-gray-5: oklch(0.88 0.012 255);
+  --sl-color-gray-6: oklch(0.94 0.008 255);
+  --sl-color-gray-7: oklch(0.97 0.005 255);
+  --sl-color-black: var(--background);
+  --sl-shadow-md: 0 8px 24px oklch(0.3 0.05 258 / 10%);
+}
+
+:root {
+  /* Starwind aliases for the shared brand tokens. */
+  --primary-accent: light-dark(var(--vl-teal-800), var(--vl-teal-500));
+  --secondary-accent: light-dark(oklch(0.92 0.008 255), oklch(0.32 0.03 258));
+  --neutral: light-dark(oklch(0.28 0.03 258), oklch(0.34 0.03 258));
+  --neutral-foreground: oklch(0.985 0 0);
+  --error: var(--destructive);
+  --error-foreground: var(--destructive-foreground);
+  --error-text: var(--destructive-text);
+  --outline: var(--ring);
+  --field-surface: var(--card);
+  --field-hover: var(--muted);
+}
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *, .dark, .dark *));
+
+@theme inline {
+  --font-sans: var(--vl-font-sans);
+  --font-mono: var(--vl-font-mono);
+  --font-heading: var(--vl-font-brand);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-text: var(--primary-text);
+  --color-primary-accent: var(--primary-accent);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary-accent: var(--secondary-accent);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-neutral: var(--neutral);
+  --color-neutral-foreground: var(--neutral-foreground);
+  --color-error: var(--error);
+  --color-error-foreground: var(--error-foreground);
+  --color-error-text: var(--error-text);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-info-text: var(--info-text);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-success-text: var(--success-text);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-warning-text: var(--warning-text);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-outline: var(--outline);
+  --color-field-surface: var(--field-surface);
+  --color-field-hover: var(--field-hover);
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+}
+
+/* Modern typography & subgrid feature cards */
+.sl-markdown-content :where(h1, h2, h3, h4) {
+  text-wrap: balance;
+}
+
+.sl-markdown-content p {
+  text-wrap: pretty;
+}
+
+/* On narrow screens, wrap table content (long CLI flags included) instead of scrolling sideways:
+   no keyboard-unreachable scroll regions (WCAG 2.1.1) and nothing hidden off-screen (1.4.10). */
+@media (max-width: 50rem) {
+  .sl-markdown-content table {
+    display: table;
+    width: 100%;
+    overflow: visible;
+  }
+
+  .sl-markdown-content :where(th, td) {
+    overflow-wrap: anywhere;
+  }
+}
+
+/* Tailwind's preflight strips link underlines; restore them in prose so links stay distinguishable
+   from body text without relying on colour alone (WCAG 1.4.1). */
+.sl-markdown-content :where(p, li, td, blockquote) a:not([class]) {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+.sl-markdown-content :where(p, li, td, blockquote) a:not([class]):hover {
+  text-decoration-thickness: 2px;
+}
+
+.vl-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  gap: 1rem;
+  margin-block: 1.5rem;
+}
+
+.vl-feature-card {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  grid-template-rows: subgrid;
+  grid-row: span 2;
+  border-color: var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  transition:
+    translate 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.vl-feature-card:hover {
+  translate: 0 -2px;
+  border-color: color-mix(in oklch, var(--primary) 42%, var(--border));
+  box-shadow: 0 14px 32px color-mix(in oklch, var(--primary) 11%, transparent);
+}
+
+.vl-feature-card [data-slot="card-header"] {
+  gap: 0.65rem;
+  padding-top: 1.4rem;
+}
+
+.vl-feature-card [data-slot="card-header"] [data-slot="card-title"] {
+  letter-spacing: -0.035em;
+}
+
+.vl-feature-card [data-slot="card-content"] p {
+  line-height: 1.6;
+}
+
+.vl-card-more {
+  margin: 0.75rem 0 0;
+  font-size: 0.84rem;
+  font-weight: 650;
+}
+
+.vl-card-more a {
+  color: var(--primary-text);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+.vl-card-more a:focus-visible {
+  border-radius: 0.15rem;
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+}
+
+.vl-card-more a::after {
+  display: inline-block;
+  margin-inline-start: 0.35rem;
+  content: "→";
+  transition: translate 150ms ease;
+}
+
+.vl-card-more a:hover::after {
+  translate: 0.2rem 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vl-feature-card,
+  .vl-start-card {
+    transition: none;
+  }
+
+  .vl-card-more a::after {
+    transition: none;
+  }
+
+  .vl-feature-card:hover,
+  .vl-start-card:focus-within {
+    translate: none;
+  }
+}
+
+.vl-cli-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: var(--card);
+}
+
+.vl-cli-card h3,
+.vl-cli-card p {
+  margin: 0;
+}
+
+.vl-cli-step {
+  width: fit-content;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--primary) 12%, transparent);
+  padding: 0.25rem 0.65rem;
+  color: var(--primary-text);
+  font-size: 0.75rem;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.vl-cli-card pre {
+  margin: auto 0 0;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 0.85rem;
+  font-size: 0.78rem;
+}
+
+.vl-doc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  align-items: stretch;
+  gap: 1rem;
+  margin-block: 1.25rem 1.75rem;
+}
+
+.vl-doc-card {
+  height: 100%;
+}
+
+.vl-doc-card [data-slot="card-header"] {
+  gap: 0.75rem;
+}
+
+.vl-doc-card h3 {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+.vl-doc-card [data-slot="card-content"] p {
+  margin: 0;
+  font-size: 0.9rem;
+  text-wrap: pretty;
+}
+
+.vl-start-grid {
+  margin-block: 1.25rem 2rem;
+}
+
+.vl-start-card {
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    translate 160ms ease;
+}
+
+.vl-start-card [data-slot="card-content"] {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.vl-start-card [data-slot="card-content"] p {
+  flex: 1;
+}
+
+.vl-start-card:focus-within {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 22%, transparent);
+  translate: 0 -2px;
+}
+
+/* ───────────── Brand chrome ───────────── */
+body {
+  font-feature-settings: "cv11", "ss01";
+  -webkit-font-smoothing: antialiased;
+}
+
+.sl-markdown-content :where(h1, h2, h3) {
+  letter-spacing: -0.03em;
+}
+
+.sl-markdown-content h2 {
+  font-weight: 750;
+}
+
+header.header {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 100;
+  backdrop-filter: saturate(1.4) blur(14px);
+  background: color-mix(in oklch, var(--sl-color-bg-nav) 82%, transparent);
+  transition:
+    transform 200ms ease,
+    opacity 160ms ease,
+    visibility 200ms;
+}
+
+header.header.is-scroll-hidden {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  header.header {
+    transition: none;
+  }
+}
+
+/* Landing page: ambient brand glow behind the hero */
+[data-has-hero] .main-pane::before,
+[data-has-hero] main::before {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: -1;
+  height: 36rem;
+  background:
+    radial-gradient(
+      48rem 24rem at 80% -6%,
+      color-mix(in oklch, var(--vl-teal-500) 22%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      40rem 20rem at 5% 0%,
+      color-mix(in oklch, var(--vl-teal-300) 10%, transparent),
+      transparent 70%
+    );
+  content: "";
+  pointer-events: none;
+}
+
+[data-has-hero] main {
+  position: relative;
+  isolation: isolate;
+}
+
+/* Landing sections */
+.vl-section-label {
+  display: block;
+  margin-block: 2.75rem 0.5rem;
+  color: var(--sl-color-accent);
+  font-family: var(--vl-font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.vl-home-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem;
+  margin-block: 1.75rem 2.5rem;
+  padding-block: 0.85rem;
+  border-block: 1px solid var(--border);
+}
+
+.vl-home-nav-label {
+  margin-inline-end: 0.2rem;
+  color: var(--muted-foreground);
+  font-family: var(--vl-font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.vl-home-nav a {
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--foreground);
+  font-size: 0.82rem;
+  font-weight: 550;
+  text-decoration: none;
+  transition:
+    border-color 150ms ease,
+    color 150ms ease,
+    background-color 150ms ease;
+}
+
+.vl-home-nav a:hover {
+  border-color: var(--primary);
+  background: color-mix(in oklch, var(--primary) 8%, var(--card));
+  color: var(--primary-text);
+}
+
+.vl-home-nav a:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vl-home-nav a {
+    transition: none;
+  }
+}
+
+.vl-faq {
+  display: grid;
+  gap: 0.6rem;
+  margin-block: 1.25rem 2rem;
+}
+
+.vl-faq details {
+  border: 1px solid var(--border);
+  border-radius: 0.85rem;
+  background: var(--card);
+  transition: border-color 150ms ease;
+}
+
+.vl-faq details[open],
+.vl-faq details:hover {
+  border-color: color-mix(in oklch, var(--primary) 42%, var(--border));
+}
+
+.vl-faq summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.95rem 1.15rem;
+  color: var(--foreground);
+  font-weight: 650;
+  cursor: pointer;
+  list-style: none;
+}
+
+.vl-faq summary::-webkit-details-marker {
+  display: none;
+}
+
+.vl-faq summary::after {
+  flex: none;
+  color: var(--primary-text);
+  font-size: 1.25rem;
+  line-height: 1;
+  content: "+";
+}
+
+.vl-faq details[open] summary::after {
+  content: "−";
+}
+
+.vl-faq summary:focus-visible {
+  border-radius: 0.85rem;
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.vl-faq details p {
+  margin: 0;
+  padding: 0 1.15rem 1.1rem;
+  color: var(--muted-foreground);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vl-faq details {
+    transition: none;
+  }
+}
+
+#home-features,
+#home-workflow,
+#home-faq,
+#home-start {
+  scroll-margin-top: 6rem;
+}
+
+.vl-trust {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: 0;
+  margin-block: 1.5rem 2.5rem;
+  border-block: 1px solid var(--border);
+}
+
+.vl-trust > div {
+  display: flex;
+  gap: 0.85rem;
+  padding: 1.25rem 1rem;
+}
+
+.vl-trust svg {
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-top: 0.1rem;
+  color: var(--primary-text);
+}
+
+.vl-trust strong {
+  display: block;
+  color: var(--foreground);
+  font-size: 0.95rem;
+}
+
+.vl-trust span {
+  color: var(--muted-foreground);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.vl-cta {
+  position: relative;
+  overflow: hidden;
+  margin-block: 3rem 1rem;
+  padding: clamp(1.75rem, 5vw, 3rem);
+  border: 1px solid color-mix(in srgb, var(--vl-teal-500) 40%, transparent);
+  border-radius: 1.25rem;
+  background:
+    radial-gradient(
+      30rem 14rem at 100% 0%,
+      color-mix(in oklch, var(--vl-teal-500) 28%, transparent),
+      transparent 70%
+    ),
+    var(--card);
+  text-align: center;
+}
+
+.vl-cta h2 {
+  margin: 0 0 0.6rem;
+  border: 0;
+  color: var(--foreground);
+  font-size: clamp(1.6rem, 3.4vw, 2.2rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+.vl-cta > p {
+  margin: 0 auto 1.5rem;
+  max-width: 34rem;
+  color: var(--muted-foreground);
+}
+
+@media (min-width: 64rem) {
+  .vl-feature-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

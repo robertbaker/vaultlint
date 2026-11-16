@@ -1,0 +1,99 @@
+/*
+ * vaultlint brand tokens — the single source of truth shared by the Astro site (`apps/site`) and
+ * the Angular Web UI (`apps/web`). Ink-navy surfaces, a teal "verified" accent, and an amber "flag".
+ *
+ * Every semantic token is written with `light-dark()`, so it follows `color-scheme`. Both apps set
+ * `color-scheme` from their theme switch: `data-theme="light|dark"` on <html> forces a scheme, and
+ * no `data-theme` (or an "auto" choice) follows the OS.
+ *
+ * App stylesheets map these onto their component libraries (Starlight/Starwind on the site,
+ * spartan/helm on the web app). Do not redefine the raw values there; change them here.
+ */
+
+:root {
+  color-scheme: light dark;
+
+  /* ── Typography ─────────────────────────────────────────── */
+  --vl-font-brand: "Bricolage Grotesque Variable", "Bricolage Grotesque", ui-sans-serif, sans-serif;
+  /* Body and code text use system fonts: nothing to download, and identical on every machine
+     (listing fonts we never load, like Inter, made the result depend on what was installed). */
+  --vl-font-sans:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  --vl-font-mono:
+    ui-monospace, "Cascadia Code", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+  /* ── Brand primitives (scheme-independent) ──────────────── */
+  --vl-teal-300: oklch(0.85 0.13 178);
+  --vl-teal-400: oklch(0.78 0.14 177);
+  --vl-teal-500: oklch(0.7 0.13 179);
+  --vl-teal-600: oklch(0.6 0.12 181);
+  --vl-teal-700: oklch(0.52 0.1 184);
+  --vl-teal-800: oklch(0.42 0.09 186);
+  --vl-amber-400: oklch(0.83 0.15 82);
+  --vl-amber-500: oklch(0.74 0.16 70);
+  --vl-ink: oklch(0.15 0.025 258);
+  --vl-ink-line: oklch(0.3 0.03 258);
+
+  /* ── Semantic surface + text tokens ─────────────────────── */
+  --background: light-dark(oklch(1 0 0), var(--vl-ink));
+  --foreground: light-dark(oklch(0.18 0.03 258), oklch(0.97 0.006 255));
+  --card: light-dark(oklch(0.995 0.002 255), oklch(0.2 0.028 258));
+  --card-foreground: var(--foreground);
+  --popover: var(--card);
+  --popover-foreground: var(--foreground);
+  --primary: light-dark(oklch(0.5 0.1 185), var(--vl-teal-400));
+  --primary-foreground: light-dark(oklch(0.99 0 0), oklch(0.17 0.03 258));
+  --secondary: light-dark(oklch(0.96 0.006 255), oklch(0.26 0.03 258));
+  --secondary-foreground: var(--foreground);
+  --muted: light-dark(oklch(0.96 0.006 255), oklch(0.26 0.03 258));
+  /* ≥ 4.5:1 on both --background and --muted in each scheme (WCAG AA body text). */
+  --muted-foreground: light-dark(oklch(0.46 0.025 258), oklch(0.74 0.02 255));
+  --accent: var(--muted);
+  --accent-foreground: var(--foreground);
+  --border: light-dark(oklch(0.9 0.008 255), oklch(1 0 0 / 12%));
+  --input: light-dark(oklch(0.86 0.01 255), oklch(1 0 0 / 18%));
+  --ring: light-dark(oklch(0.5 0.1 185), var(--vl-teal-400));
+  --radius: 0.625rem;
+
+  /* ── Status colours ─────────────────────────────────────── */
+  --destructive: light-dark(oklch(0.577 0.245 27.325), oklch(0.704 0.191 22.216));
+  --destructive-foreground: light-dark(oklch(0.985 0 0), oklch(0.145 0 0));
+  --success: light-dark(oklch(0.55 0.14 155), oklch(0.7 0.13 155));
+  --success-foreground: light-dark(oklch(0.985 0 0), oklch(0.145 0 0));
+  --warning: light-dark(var(--vl-amber-500), var(--vl-amber-400));
+  --warning-foreground: oklch(0.18 0.02 70);
+  --info: light-dark(oklch(0.58 0.14 240), oklch(0.7 0.13 240));
+  --info-foreground: light-dark(oklch(0.985 0 0), oklch(0.145 0 0));
+
+  /* Text-on-surface variants of the brand/status colours, AA on --background and --card. */
+  --primary-text: light-dark(oklch(0.42 0.09 186), oklch(0.85 0.12 178));
+  --destructive-text: light-dark(oklch(0.45 0.22 27), oklch(0.78 0.18 22));
+  --success-text: light-dark(oklch(0.42 0.14 155), oklch(0.78 0.13 155));
+  --warning-text: light-dark(oklch(0.45 0.14 70), var(--vl-amber-400));
+  --info-text: light-dark(oklch(0.44 0.14 240), oklch(0.78 0.13 240));
+
+  /* ── Motion ─────────────────────────────────────────────── */
+  --vl-motion-fast: 150ms;
+  --vl-motion-normal: 200ms;
+  --vl-easing: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* An explicit theme choice wins over the OS preference. */
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+::selection {
+  background-color: color-mix(in oklch, var(--primary) 22%, transparent);
+}
+
+/* Shared focus treatment: one visible, brand-coloured ring everywhere. */
+:where(a, button, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}

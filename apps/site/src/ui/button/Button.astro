@@ -1,0 +1,112 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import type { VariantProps } from "tailwind-variants";
+
+import { withPalette, type PaletteProps } from "../../lib/palette";
+import ButtonContent from "./ButtonContent.astro";
+import { button } from "./variants";
+
+type ButtonVariantProps = VariantProps<typeof button>;
+type StandardVariant = NonNullable<ButtonVariantProps["variant"]>;
+
+interface Props
+  extends HTMLAttributes<"button">,
+    Omit<HTMLAttributes<"a">, "type">,
+    PaletteProps {
+  variant?: StandardVariant;
+  size?: ButtonVariantProps["size"];
+  href?: string;
+  external?: boolean;
+  ariaLabel?: string;
+  type?: "button" | "submit" | "reset";
+  fullWidth?: boolean;
+  block?: boolean;
+  wide?: boolean;
+  square?: boolean;
+  loading?: boolean;
+  loadingText?: string;
+  /** astro-icon name rendered beside the label. */
+  icon?: string;
+  iconPosition?: "left" | "right";
+  iconSize?: "auto" | "sm" | "md" | "lg";
+  animated?: boolean;
+}
+
+const {
+  variant = "default",
+  size,
+  href,
+  external = false,
+  fullWidth = false,
+  block = false,
+  wide = false,
+  square = false,
+  loading = false,
+  loadingText,
+  icon,
+  iconPosition = "left",
+  iconSize = "auto",
+  animated = false,
+  ariaLabel,
+  disabled: disabledProp = false,
+  tabindex,
+  class: className,
+  ...rest
+} = Astro.props;
+
+const disabled = disabledProp || loading;
+const iconSizeClass =
+  iconSize === "auto"
+    ? undefined
+    : { sm: "size-4", md: "size-5", lg: "size-6" }[iconSize];
+const resolvedAriaLabel = ariaLabel ?? (rest["aria-label"] as string | undefined);
+const resolvedClass = button({
+  variant,
+  size,
+  fullWidth,
+  block,
+  wide,
+  square,
+  noAnimation: !animated,
+  class: [loading && "cursor-progress", className],
+});
+
+const isTargetBlank = rest.target === "_blank" || external;
+const externalAttrs = isTargetBlank ? { target: "_blank", rel: "noopener noreferrer" } : {};
+const Tag = href !== undefined ? "a" : "button";
+---
+
+{
+  Tag === "a" ? (
+    <a
+      {...withPalette(rest)}
+      class={resolvedClass}
+      href={disabled ? undefined : href}
+      aria-label={resolvedAriaLabel}
+      aria-busy={loading ? "true" : undefined}
+      aria-disabled={disabled ? "true" : undefined}
+      data-disabled={disabled ? "" : undefined}
+      tabindex={disabled ? -1 : tabindex}
+      data-slot="button"
+      {...externalAttrs}
+    >
+      <ButtonContent {loading} {loadingText} {icon} {iconPosition} iconClass={iconSizeClass}>
+        <slot />
+      </ButtonContent>
+      {isTargetBlank && <span class="sr-only"> (opens in a new tab)</span>}
+    </a>
+  ) : (
+    <button
+      {...withPalette(rest)}
+      type={rest.type ?? "button"}
+      class={resolvedClass}
+      aria-label={resolvedAriaLabel}
+      disabled={disabled}
+      data-slot="button"
+    >
+      <ButtonContent {loading} {loadingText} {icon} {iconPosition} iconClass={iconSizeClass}>
+        <slot />
+      </ButtonContent>
+    </button>
+  )
+}

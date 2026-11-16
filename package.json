@@ -1,0 +1,88 @@
+{
+  "name": "vaultlint-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "start": "bun --filter vaultlint start",
+    "dev": "bun --filter web start",
+    "dev:cli": "bun --filter vaultlint dev",
+    "dev:site": "bun --filter site dev",
+    "dev:web": "bun --filter web start",
+    "dev:ui": "bun run build:web && bun --filter vaultlint dev --ui",
+    "ui": "bun run build:web && bun --filter vaultlint ui",
+    "build": "bun run build:cli && bun run build:web",
+    "build:cli": "bun --filter vaultlint build",
+    "build:publish": "bun scripts/build-publish.ts",
+    "test:publish": "bun scripts/test-publish.ts",
+    "build:site": "bun --filter site build",
+    "build:web": "bun --filter web build",
+    "typecheck": "bun --filter '*' typecheck",
+    "test": "bun run test:packages && bun run test:cli && bun run test:web",
+    "test:packages": "bun --filter './packages/*' test",
+    "test:cli": "bun --filter vaultlint test",
+    "test:cli:watch": "bun --filter vaultlint test:watch",
+    "test:web": "bun --filter web test -- --watch=false",
+    "test:all": "bun run test && bun run e2e",
+    "e2e": "bunx playwright test",
+    "e2e:ui": "bunx playwright test --ui",
+    "e2e:site": "bun run build:site && bunx playwright test -c playwright.site.config.ts",
+    "lint": "oxlint -c oxlint.json apps/cli/src apps/cli/tests apps/web/src packages/*/src e2e e2e-site scripts",
+    "format": "oxfmt --write apps/cli/src apps/cli/tests apps/web/src packages/*/src e2e e2e-site scripts playwright.config.ts playwright.site.config.ts",
+    "format:check": "oxfmt --check apps/cli/src apps/cli/tests apps/web/src packages/*/src e2e e2e-site scripts playwright.config.ts playwright.site.config.ts",
+    "check": "bun run lint && bun run format:check && bun run typecheck && bun run test",
+    "prepare": "bun-git-hooks",
+    "audit:sample": "bun apps/cli/src/index.ts --input ./apps/cli/tests/fixtures/vault.json --detect-duplicates --check-weak-passwords --dry-run",
+    "install:all": "bun install",
+    "clean": "rimraf publish apps/cli/dist apps/site/dist apps/web/dist",
+    "release": "release-it"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.65.1",
+    "@release-it/conventional-changelog": "^12.0.2",
+    "bun-git-hooks": "^0.3.3",
+    "oxfmt": "^0.80.0",
+    "oxlint": "^1.95.0",
+    "release-it": "^21.1.3",
+    "rimraf": "^6.1.4",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  },
+  "packageManager": "bun@1.4.5",
+  "release-it": {
+    "git": {
+      "tagName": "v${version}",
+      "tagMatch": "v[0-9]*",
+      "commitMessage": "chore: release v${version} [skip ci]",
+      "requireCleanWorkingDir": true,
+      "assets": [
+        "package.json",
+        "apps/cli/package.json",
+        "CHANGELOG.md",
+        "bun.lock",
+        "apps/web/src/index.html"
+      ]
+    },
+    "github": {
+      "release": true
+    },
+    "npm": {
+      "publish": false
+    },
+    "hooks": {
+      "after:bump": "bun install --lockfile-only && bun apps/web/scripts/sync-shell-version.ts && npm --prefix apps/cli version ${version} --no-git-tag-version --allow-same-version && bun run build:publish"
+    },
+    "plugins": {
+      "@release-it/conventional-changelog": {
+        "infile": "CHANGELOG.md",
+        "preset": {
+          "name": "conventionalcommits"
+        }
+      }
+    }
+  }
+}

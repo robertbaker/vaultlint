@@ -1,0 +1,756 @@
+<div
+  class="bg-background text-foreground flex min-h-screen flex-col"
+  [class.landing-page]="!store.vaultData()"
+>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <app-vault-header
+    [canUndo]="store.canUndo()"
+    [canRedo]="store.canRedo()"
+    [hasVault]="store.vaultData() !== null"
+    [theme]="theme()"
+    [version]="appVersion"
+    [hasNewChangelog]="hasNewChangelog()"
+    [sourceFormatName]="store.sourceFormatName()"
+    [exportFormat]="store.exportFormat()"
+    [pushLabel]="store.activeVendorPushLabel()"
+    [vendorBusy]="store.vendorBusy()"
+    (undo)="store.undo()"
+    (redo)="store.redo()"
+    (exportVault)="store.exportVault()"
+    (exportFormatChange)="store.exportFormat.set($event)"
+    (exportReport)="store.exportAuditReport()"
+    (compareFormats)="openCoverage()"
+    (themeChange)="onThemeChange($event)"
+    (openChangelog)="changelogDialog().open()"
+    (startTour)="guidedTour().open()"
+    (pushToVendor)="onPushToVendorRequested()"
+  />
+
+  <main
+    id="main-content"
+    tabindex="-1"
+    [class.summary-collapsed]="store.vaultData() !== null && !summaryOpen()"
+    [class]="store.vaultData() ? 'mx-auto flex w-full max-w-7xl flex-1 flex-col gap-4 px-4 py-5 outline-none sm:px-6' : 'landing-shell mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 pb-10 pt-6 outline-none sm:px-6'"
+  >
+    @if (!store.vaultData()) {
+    <section class="landing-copy" aria-labelledby="landing-title">
+      <p class="landing-eyebrow">
+        <span aria-hidden="true"></span> Local-first · Open source · {{ brandLicense }}
+      </p>
+      <h1 id="landing-title">{{ brandTagline[0] }}<br /><span>{{ brandTagline[1] }}</span></h1>
+      <p>
+        Find weak or reused passwords, merge duplicates, and batch-edit entries. Your export is
+        parsed locally in this browser.
+      </p>
+    </section>
+    <section class="feature-highlights" id="feature-highlights" aria-labelledby="features-title">
+      <div class="feature-heading">
+        <h2 id="features-title">What the workspace<br /><span>does for your export.</span></h2>
+        <p>Inspect findings, edit entries, and export to any supported format.</p>
+      </div>
+      <div class="feature-list">
+        <article class="feature-item">
+          <div class="feature-icon" aria-hidden="true">
+            <svg viewBox="0 0 32 32" fill="none">
+              <circle cx="13.5" cy="13.5" r="9" />
+              <path d="m20.5 20.5 7 7M13.5 9v5l3 2" />
+            </svg>
+          </div>
+          <div>
+            <h3>Review password and URI issues</h3>
+            <p>Find weak or reused passwords, duplicates, and invalid URIs.</p>
+          </div>
+        </article>
+        <article class="feature-item">
+          <div class="feature-icon" aria-hidden="true">
+            <svg viewBox="0 0 32 32" fill="none">
+              <path d="M5 8h22M5 16h22M5 24h22" />
+              <circle cx="12" cy="8" r="2.5" />
+              <circle cx="21" cy="16" r="2.5" />
+              <circle cx="10" cy="24" r="2.5" />
+            </svg>
+          </div>
+          <div>
+            <h3>Edit one or many entries</h3>
+            <p>Change entries in batches, map domains, and undo edits when needed.</p>
+          </div>
+        </article>
+        <article class="feature-item">
+          <div class="feature-icon" aria-hidden="true">
+            <svg viewBox="0 0 32 32" fill="none">
+              <path d="M6 10h19m0 0-5-5m5 5-5 5M26 22H7m0 0 5-5m-5 5 5 5" />
+            </svg>
+          </div>
+          <div>
+            <h3>Convert between formats</h3>
+            <p>Export the updated vault in a format supported by another password manager.</p>
+          </div>
+        </article>
+        <article class="feature-item">
+          <div class="feature-icon" aria-hidden="true">
+            <svg viewBox="0 0 32 32" fill="none">
+              <rect x="7" y="14" width="18" height="14" rx="2" />
+              <path d="M11 14V9a5 5 0 0 1 10 0v5" />
+              <circle cx="16" cy="21" r="1" />
+            </svg>
+          </div>
+          <div>
+            <h3>Local-first by default</h3>
+            <p>
+              No account or server upload. Breach, redirect, and AI checks only run when you start
+              them.
+            </p>
+          </div>
+        </article>
+      </div>
+    </section>
+    <section class="workflow-rail" id="how-it-works" aria-label="How vaultlint works">
+      <div class="workflow-steps">
+        <span>Import</span><i aria-hidden="true"></i> <span>Review</span><i aria-hidden="true"></i>
+        <span>Improve</span><i aria-hidden="true"></i>
+        <span>Export</span>
+      </div>
+      <p>
+        <span aria-hidden="true">◉</span> Original file untouched — download a new copy when ready.
+      </p>
+    </section>
+    <div
+      class="landing-format-rail"
+      role="region"
+      tabindex="0"
+      aria-label="Supported password manager exports"
+    >
+      <span class="format-rail-label">Works with</span>
+      @for (manager of supportedManagers; track manager) {
+      <span>{{ manager }}</span>
+      }
+    </div>
+    } @if (!store.vaultData()) {
+    <div id="upload-vault" class="landing-intake-cluster">
+      <div class="landing-import-flow">
+        <div class="landing-upload-slot">
+          @if (!drafts() || drafts()?.saveState() === "checking") {
+          <p class="text-muted-foreground rounded-lg border px-4 py-3 text-sm" role="status">
+            Checking for a saved session…
+          </p>
+          } @else if (!drafts()?.hasDraft()) {
+          <app-vault-upload
+            [compact]="false"
+            [vendorProviders]="store.vendorProviders()"
+            [vendorBusy]="store.vendorBusy()"
+            (fileLoaded)="onFileLoaded($event)"
+            (parseError)="store.notify('Failed to read vault file: ' + $event)"
+            (loadSample)="onLoadSampleRequested()"
+            (clearVault)="onClearVaultRequested()"
+            (loadVendorCli)="onLoadVendorCliRequested($event)"
+          />
+          }
+        </div>
+        @if (drafts(); as recovery) {
+        <section class="landing-recovery-panel" aria-label="Local recovery copy">
+          <span class="landing-recovery-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M12 3.5 19 6v5.4c0 4.5-2.9 7.7-7 9.1-4.1-1.4-7-4.6-7-9.1V6l7-2.5Z" />
+              <path d="M9.5 11.5v-1a2.5 2.5 0 0 1 5 0v1m-5.5 0h6v4h-6z" />
+            </svg>
+          </span>
+          <label for="recovery-copy-toggle" class="landing-recovery-control">
+            <span class="landing-recovery-copy">
+              <span class="landing-recovery-heading">
+                Keep an encrypted local recovery copy
+                <span
+                  class="landing-recovery-optional"
+                  [class.landing-recovery-enabled]="recovery.enabled()"
+                  [class.landing-recovery-unavailable]="!recovery.supported"
+                >
+                  @if (!recovery.supported) { Unavailable } @else if (recovery.enabled()) { On }
+                  @else { Off by default }
+                </span>
+              </span>
+              <span id="recovery-copy-description" class="landing-recovery-description">
+                Save your imported vault encrypted in this browser and resume after a refresh.
+              </span>
+              <span id="recovery-copy-help" class="landing-recovery-help" aria-live="polite">
+                @if (!recovery.supported) { Unavailable in this browser. } @else if
+                (!recovery.enabled()) { Off: nothing is stored until you turn this on. } @else { On:
+                your next imported vault will be saved encrypted here. }
+              </span>
+            </span>
+            <input
+              id="recovery-copy-toggle"
+              type="checkbox"
+              switch
+              class="landing-recovery-checkbox recovery-switch"
+              aria-describedby="recovery-copy-description recovery-copy-help"
+              [checked]="recovery.enabled()"
+              [disabled]="!recovery.supported"
+              (change)="onRecoveryToggle($event)"
+            />
+          </label>
+        </section>
+        }
+      </div>
+    </div>
+    } @else {
+    <button
+      hlmBtn
+      type="button"
+      variant="outline"
+      size="sm"
+      class="summary-toggle h-auto min-h-11 w-full justify-between gap-3 py-2 sm:hidden"
+      aria-controls="upload-vault vault-summary"
+      [attr.aria-expanded]="summaryOpen()"
+      (click)="summaryOpen.set(!summaryOpen())"
+    >
+      <span class="flex flex-col items-start text-left">
+        <span class="font-semibold">Vault summary &amp; tools</span>
+        <span class="text-muted-foreground text-xs font-normal">
+          {{ store.totalItems() }} items · {{ store.duplicateGroups().length }} duplicate {{
+          store.duplicateGroups().length === 1 ? 'group' : 'groups' }} · {{ store.weakItems().length
+          }} weak
+        </span>
+      </span>
+      <span aria-hidden="true">{{ summaryOpen() ? "Hide" : "Show" }}</span>
+    </button>
+    <div id="upload-vault">
+      <app-vault-upload
+        [compact]="true"
+        [vendorProviders]="store.vendorProviders()"
+        [vendorBusy]="store.vendorBusy()"
+        (fileLoaded)="onFileLoaded($event)"
+        (parseError)="store.notify('Failed to read vault file: ' + $event)"
+        (loadSample)="onLoadSampleRequested()"
+        (clearVault)="onClearVaultRequested()"
+        (loadVendorCli)="onLoadVendorCliRequested($event)"
+      >
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-1.5">
+          <span hlmBadge variant="success">
+            <ng-icon name="matShieldRound" class="size-3.5" aria-hidden="true" />
+            Local processing
+          </span>
+          @if (drafts(); as recovery) {
+          <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs">
+            <label
+              for="recovery-copy-toggle"
+              class="inline-flex min-h-7 cursor-pointer items-center gap-2 font-medium"
+            >
+              <input
+                id="recovery-copy-toggle"
+                type="checkbox"
+                switch
+                class="recovery-switch accent-primary size-4"
+                aria-describedby="recovery-copy-help"
+                [checked]="recovery.enabled()"
+                [disabled]="!recovery.supported"
+                (change)="onRecoveryToggle($event)"
+              />
+              <span>Keep an encrypted local recovery copy</span>
+            </label>
+            <span id="recovery-copy-help" class="text-muted-foreground" aria-live="polite">
+              @if (!recovery.supported) { Local recovery is unavailable in this browser. } @else if
+              (!recovery.enabled()) { Off: nothing is stored in this browser. } @else { @switch
+              (recovery.saveState()) { @case ("saving") { Saving an encrypted recovery copy… } @case
+              ("saved") { Changes saved encrypted on this browser at {{ recoverySavedAt() }}. }
+              @case ("error") { Recovery copy could not be saved. Export your vault before leaving.
+              } @default { On: your open vault will be saved encrypted on this browser. } } }
+            </span>
+          </div>
+          }
+        </div>
+        <button
+          slot="actions"
+          hlmBtn
+          type="button"
+          variant="outline"
+          size="xs"
+          [attr.aria-expanded]="coverageOpen()"
+          (click)="toggleCoverage()"
+        >
+          {{ coverageOpen() ? "Hide formats" : "Compare formats" }}
+        </button>
+      </app-vault-upload>
+    </div>
+    } @if (!store.vaultData() && drafts()?.hasDraft()) {
+    <section
+      class="border-primary/30 bg-primary/5 flex flex-col justify-between gap-4 rounded-xl border p-4 sm:flex-row sm:items-center sm:p-5"
+      aria-label="Recover saved session"
+    >
+      <div class="max-w-2xl">
+        <p class="text-primary text-xs font-semibold tracking-wide uppercase">
+          Saved on this browser
+        </p>
+        <h2 class="mt-1 text-base font-semibold">Resume your previous session?</h2>
+        <p class="text-muted-foreground mt-1 text-sm">
+          An encrypted recovery copy from {{ recoverySavedAt() }} is available. Resume to continue
+          your latest edits, or remove it before choosing another vault. The copy stays in this
+          browser and is never sent over the network.
+        </p>
+      </div>
+      <div class="flex shrink-0 flex-wrap gap-2">
+        <button hlmBtn variant="default" size="sm" (click)="onResumeDraft()">Resume session</button>
+        <button hlmBtn variant="outline" size="sm" (click)="onDiscardDraft()">
+          Remove saved session
+        </button>
+      </div>
+    </section>
+    } @if (store.vaultData()) { @defer (when store.vaultData() !== null) {
+    <app-vault-stats
+      id="vault-summary"
+      [totalItems]="store.totalItems()"
+      [duplicateCount]="store.duplicateGroups().length"
+      [weakCount]="store.weakItems().length"
+      [fidoCount]="store.fidoCount()"
+      [healthScore]="store.passwordHealthScore()"
+      [lintCount]="store.lintResult()?.counts?.total ?? 0"
+      (jumpTo)="onJumpTo($event)"
+    />
+
+    @if (store.exportWarnings().length > 0) {
+    <section hlmAlert class="border-warning/40 bg-warning/5" aria-live="polite">
+      <h2 hlmAlertTitle>Export coverage preview</h2>
+      <div hlmAlertDescription>
+        <p class="text-xs">
+          The selected format may omit some vault details. Review these limitations before
+          exporting.
+        </p>
+        <ul class="mt-1 list-disc space-y-1 pl-5 text-sm">
+          @for (warning of store.exportWarnings(); track warning) {
+          <li>{{ warning }}</li>
+          }
+        </ul>
+      </div>
+    </section>
+    } @if (coverageOpen()) {
+    <section id="export-coverage-panel" hlmCard size="sm" aria-label="Export format comparison">
+      <div hlmCardHeader class="flex flex-row flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 hlmCardTitle>Compare supported export formats</h2>
+          <p hlmCardDescription>
+            Each target format is exported and parsed in memory. Reports contain counts and field
+            names only; vault values are never included.
+          </p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button
+            hlmBtn
+            variant="outline"
+            size="sm"
+            [disabled]="store.checkingFormatCoverage()"
+            (click)="store.inspectAllFormatCoverage()"
+          >
+            Run comparison again
+          </button>
+          <button hlmBtn variant="ghost" size="sm" (click)="coverageOpen.set(false)">Close</button>
+        </div>
+      </div>
+      <div hlmCardContent class="space-y-3 pt-0">
+        @if (coverageCounts().total > 0) {
+        <div class="scroll-fade-x flex max-w-full flex-nowrap items-center gap-2 py-0.5">
+          <button
+            hlmBtn
+            type="button"
+            size="xs"
+            class="shrink-0 tabular-nums"
+            [variant]="coverageFilter() === 'all' ? 'default' : 'outline'"
+            [attr.aria-pressed]="coverageFilter() === 'all'"
+            (click)="coverageFilter.set('all')"
+          >
+            All ({{ coverageCounts().total }})
+          </button>
+          <button
+            hlmBtn
+            type="button"
+            size="xs"
+            class="shrink-0 tabular-nums"
+            [variant]="coverageFilter() === 'lossless' ? 'default' : 'outline'"
+            [attr.aria-pressed]="coverageFilter() === 'lossless'"
+            (click)="coverageFilter.set('lossless')"
+          >
+            Lossless ({{ coverageCounts().lossless }})
+          </button>
+          <button
+            hlmBtn
+            type="button"
+            size="xs"
+            class="shrink-0 tabular-nums"
+            [variant]="coverageFilter() === 'changes' ? 'default' : 'outline'"
+            [attr.aria-pressed]="coverageFilter() === 'changes'"
+            (click)="coverageFilter.set('changes')"
+          >
+            With changes ({{ coverageCounts().changes }})
+          </button>
+        </div>
+        }
+        <div
+          class="responsive-table-wrap"
+          tabindex="0"
+          role="region"
+          aria-label="Export format comparison table"
+        >
+          <table class="w-full text-left text-sm">
+            <thead>
+              <tr>
+                <th scope="col" class="py-2 pr-3">Format</th>
+                <th scope="col" class="py-2 pr-3">Round-trip results</th>
+                <th scope="col" class="py-2 text-right">Target</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (result of filteredRoundTripCoverage(); track result.ok ? result.report.format :
+              result.formatName) {
+              <tr class="border-t align-top">
+                <th scope="row" class="py-2 pr-3 font-medium">
+                  <div class="flex flex-wrap items-center gap-1.5">
+                    <span>{{ result.ok ? result.report.formatName : result.formatName }}</span>
+                    @if (isLosslessCoverage(result)) {
+                    <span hlmBadge variant="success" size="sm">Lossless</span>
+                    } @else if (result.ok) {
+                    <span hlmBadge variant="warning" size="sm">Changes</span>
+                    } @else {
+                    <span hlmBadge variant="destructive" size="sm">Unavailable</span>
+                    }
+                  </div>
+                </th>
+                <td class="py-2 pr-3" data-label="Round-trip results">
+                  @if (result.ok) {
+                  <p class="tabular-nums">
+                    {{ result.report.changedItemCount }} changed · {{ result.report.missingItemCount
+                    }} missing · {{ result.report.addedItemCount }} added of {{
+                    result.report.sourceItemCount }} items
+                  </p>
+                  @if (result.report.fieldChanges.length || result.report.warnings.length) {
+                  <ul class="mt-1 list-disc space-y-1 pl-5">
+                    @for (change of result.report.fieldChanges; track change.field) {
+                    <li class="tabular-nums">
+                      {{ change.field }}: {{ change.affectedItems }} affected, {{
+                      change.missingAfterRoundTrip }} missing, {{ change.changedAfterRoundTrip }}
+                      changed
+                    </li>
+                    } @for (warning of result.report.warnings; track warning) {
+                    <li>{{ warning }}</li>
+                    }
+                  </ul>
+                  } @else {
+                  <span class="text-muted-foreground">No changes detected.</span>
+                  } } @else {
+                  <span class="text-destructive-readable"
+                    >Inspection unavailable: {{ result.error }}</span
+                  >
+                  }
+                </td>
+                <td class="py-2 sm:text-right">
+                  @if (result.ok) { @if (store.exportFormat() === result.report.format) {
+                  <span hlmBadge variant="default" size="sm">Selected</span>
+                  } @else {
+                  <button
+                    hlmBtn
+                    type="button"
+                    variant="outline"
+                    size="xs"
+                    (click)="selectExportFormat(result.report.format, result.report.formatName)"
+                  >
+                    Use format
+                  </button>
+                  } }
+                </td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        @if (store.checkingFormatCoverage()) {
+        <p class="text-muted-foreground mt-2 text-xs" role="status">Checking formats locally…</p>
+        }
+      </div>
+    </section>
+    }
+
+    <div id="vault-workspace" class="workspace-shell">
+      <nav class="workspace-nav" aria-label="Vault workspace">
+        @for (section of navigationSections; track section.id) {
+        <div class="contents">
+          <button
+            type="button"
+            id="workspace-section-{{ section.id }}"
+            class="workspace-nav-btn"
+            [class.is-active]="activeSection().id === section.id"
+            [attr.aria-current]="activeSection().id === section.id ? 'page' : null"
+            [attr.aria-describedby]="'workspace-section-' + section.id + '-description'"
+            [attr.aria-keyshortcuts]="navigationSections.indexOf(section) + 1"
+            (click)="onSectionSelected(section.id)"
+          >
+            <ng-icon [name]="section.icon" class="workspace-nav-icon" aria-hidden="true" />
+            <span class="workspace-nav-text">
+              <span class="workspace-nav-label">{{ section.label }}</span>
+              <span class="workspace-nav-desc" aria-hidden="true">{{ section.description }}</span>
+            </span>
+            @if (sectionBadge(section.id); as count) {
+            <span class="workspace-nav-badge" aria-hidden="true">{{ count }}</span>
+            }
+            <kbd hlmKbd class="workspace-nav-kbd" aria-hidden="true"
+              >{{ navigationSections.indexOf(section) + 1 }}</kbd
+            >
+          </button>
+          <span id="workspace-section-{{ section.id }}-description" class="sr-only">
+            {{ section.description }}@if (sectionBadge(section.id); as count) { ({{ count }})}
+          </span>
+        </div>
+        }
+      </nav>
+
+      <section hlmCard size="sm" class="workspace-main">
+        <header class="workspace-heading">
+          <div>
+            <h2>{{ activeSection().label }}</h2>
+            <p>{{ activeSection().description }}</p>
+          </div>
+          <span class="workspace-local-note">Local-first workspace</span>
+        </header>
+        <div hlmCardContent class="pt-4">
+          <div [hidden]="activeSection().id !== 'items'">
+            <app-vault-explorer
+              [rows]="filteredRows()"
+              [vaultGeneration]="store.vaultGeneration()"
+              [folders]="store.folders()"
+              [revealedIds]="store.revealedIds()"
+              [(searchQuery)]="searchQuery"
+              [(filterMode)]="filterMode"
+              [(typeFilter)]="typeFilter"
+              [(folderFilter)]="folderFilter"
+              (toggleReveal)="store.toggleReveal($event)"
+              (toggleFavorite)="store.toggleFavorite($event)"
+              (copyValue)="onCopyValue($event)"
+              (addItem)="onAddItemRequested()"
+              (editRow)="onEditRowRequested($event)"
+              (deleteRow)="onDeleteRequested($event)"
+              (bulkDelete)="onBulkDeleteRequested($event)"
+              (bulkRegenerate)="store.regeneratePasswordsForIndices($event)"
+              (bulkMoveFolder)="store.moveItemsToFolder($event.indices, $event.folderId)"
+            />
+          </div>
+
+          <div [hidden]="activeSection().id !== 'review'">
+            <hlm-tabs [tab]="reviewTab()" (tabActivated)="onTabActivated($event)" class="w-full">
+              <div class="border-border mb-4 border-b pb-1">
+                <hlm-tabs-list
+                  variant="line"
+                  class="scroll-fade-x flex w-full flex-nowrap justify-start overflow-x-auto"
+                >
+                  <button hlmTabsTrigger="lint" class="flex-none shrink-0">
+                    Vault checks
+                    <span class="text-muted-foreground ml-1 tabular-nums">
+                      {{ store.lintResult()?.counts?.total ?? 0 }}
+                    </span>
+                  </button>
+                  <button hlmTabsTrigger="duplicates" class="flex-none shrink-0">
+                    Duplicates
+                    <span class="text-muted-foreground ml-1 tabular-nums">
+                      {{ store.duplicateGroups().length }}
+                    </span>
+                  </button>
+                  <button hlmTabsTrigger="security" class="flex-none shrink-0">
+                    Security &amp; links
+                    <span class="text-muted-foreground ml-1 tabular-nums">
+                      {{ securityIssueCount() }}
+                    </span>
+                  </button>
+                </hlm-tabs-list>
+              </div>
+
+              <div hlmTabsContent="lint">
+                @defer (when activeTab() === "lint") {
+                <app-lint-panel
+                  [lintResult]="store.lintResult()"
+                  [ruleset]="store.lintRuleset()"
+                  [overrides]="store.lintRuleOverrides()"
+                  (rulesetChange)="store.setLintRuleset($event)"
+                  (ruleSeverityChange)="store.setLintRuleSeverity($event.ruleId, $event.severity)"
+                  (resetRules)="store.resetLintRules()"
+                  (profileImported)="store.loadLintProfile($event)"
+                  (profileRestored)="store.loadLintProfile($event, false)"
+                  (profileImportFailed)="store.notify('Lint profile import failed: ' + $event)"
+                  (autofixSafe)="store.runLintAutofix(false)"
+                  (autofixAll)="store.runLintAutofix(true)"
+                  (autofixRule)="store.runLintAutofix(false, [$event])"
+                  (editItem)="onEditItemByIndex($event)"
+                />
+                }
+              </div>
+
+              <div hlmTabsContent="duplicates">
+                @defer (when activeTab() === "duplicates") {
+                <app-duplicates-panel
+                  [groups]="store.duplicateGroups()"
+                  (mergeGroup)="store.mergeGroup($event)"
+                  (mergeAll)="store.mergeAllDuplicates()"
+                />
+                }
+              </div>
+
+              <div hlmTabsContent="security">
+                @defer (when activeTab() === "security") {
+                <app-security-panel
+                  [weakItems]="store.weakItems()"
+                  [reusedGroups]="store.reusedGroups()"
+                  [invalidUriItems]="store.invalidUriItems()"
+                  [healthScore]="store.passwordHealthScore()"
+                  [checkingHibp]="store.checkingHibp()"
+                  [checkingLinks]="store.checkingLinks()"
+                  [checkingMobileUris]="store.checkingMobileUris()"
+                  [chartBreakdown]="store.chartBreakdown()"
+                  [redirectFindings]="store.redirectFindings()"
+                  [deadLinkFindings]="store.deadLinkFindings()"
+                  [mobileUriFindings]="store.mobileUriFindings()"
+                  [(passwordLength)]="store.passwordLength"
+                  (checkHibp)="store.checkCompromisedHibp()"
+                  (checkLinks)="store.checkLinksAndRedirects()"
+                  (checkMobileUris)="store.checkMobileAppUris()"
+                  (regenerateOne)="store.regeneratePassword($event)"
+                  (regenerateAll)="store.regenerateAllWeak()"
+                  (editItem)="onEditItemByIndex($event)"
+                  (applyRedirect)="store.applyRedirect($event.finding, $event.replaceOriginal)"
+                  (removeDeadUri)="store.removeDeadUri($event)"
+                  (applySuggestedMobileUri)="store.applySuggestedMobileUri($event)"
+                />
+                }
+              </div>
+            </hlm-tabs>
+          </div>
+
+          <div [hidden]="activeSection().id !== 'organize'">
+            <hlm-tabs [tab]="organizeTab()" (tabActivated)="onTabActivated($event)" class="w-full">
+              <div class="border-border mb-4 border-b pb-1">
+                <hlm-tabs-list
+                  variant="line"
+                  class="scroll-fade-x flex w-full flex-nowrap justify-start overflow-x-auto"
+                >
+                  <button hlmTabsTrigger="batch" class="flex-none shrink-0">
+                    Batch &amp; domains
+                  </button>
+                  <button hlmTabsTrigger="migration" class="flex-none shrink-0">Merge vault</button>
+                  <button hlmTabsTrigger="aegis" class="flex-none shrink-0">FIDO import</button>
+                </hlm-tabs-list>
+              </div>
+
+              <div hlmTabsContent="batch">
+                @defer (when activeTab() === "batch") {
+                <app-batch-edit-panel
+                  [mappings]="store.domainMappings()"
+                  [previewFn]="previewBatchFn"
+                  (applyBatch)="onApplyBatch($event)"
+                  (normalizeAll)="store.normalizeAll()"
+                  (addMapping)="store.addDomainMapping($event.from, $event.to)"
+                  (removeMapping)="store.removeDomainMapping($event)"
+                  (applyMappings)="store.applyDomainMappings()"
+                  (suggestMappings)="store.suggestDomainMappings()"
+                  (openAi)="activateTab('ai')"
+                />
+                }
+              </div>
+
+              <div hlmTabsContent="migration">
+                @defer (when activeTab() === "migration") {
+                <app-migration-panel
+                  [current]="store.vaultData()"
+                  (apply)="store.mergeIncomingVault($event.incoming, $event.options)"
+                />
+                }
+              </div>
+
+              <div hlmTabsContent="aegis">
+                @defer (when activeTab() === "aegis") {
+                <app-aegis-import-panel
+                  (aegisLoaded)="onAegisLoaded($event)"
+                  (parseError)="store.notify('Aegis import failed: ' + $event)"
+                />
+                }
+              </div>
+            </hlm-tabs>
+          </div>
+
+          <div [hidden]="activeSection().id !== 'ai'">
+            @defer (when activeTab() === "ai") {
+            <app-ai-assistant-panel
+              [aiRunning]="store.aiRunning()"
+              [aiActiveTask]="store.aiActiveTask()"
+              [organizeSummary]="store.aiOrganizeSummary()"
+              [duplicateGroups]="store.aiDuplicateGroups()"
+              [uriSuggestions]="store.aiUriSuggestions()"
+              [vaultItems]="store.vaultData()?.items ?? []"
+              [hygieneFindings]="store.aiHygieneFindings()"
+              (categorizeAi)="store.categorizeWithAi($event)"
+              (organizeAi)="store.organizeWithAi($event)"
+              (detectDuplicatesAi)="store.detectDuplicatesWithAi($event)"
+              (mergeDuplicate)="store.mergeAiDuplicateGroup($event)"
+              (suggestUrisAi)="store.suggestUrisWithAi($event)"
+              (applyUri)="store.applyAiUriSuggestion($event)"
+              (applyAllUris)="store.applyAllAiUriSuggestions()"
+              (analyzeHygieneAi)="store.analyzeHygieneWithAi($event)"
+            />
+            }
+          </div>
+
+          <div [hidden]="activeSection().id !== 'activity'">
+            @defer (when activeTab() === "activity") {
+            <app-activity-log-panel
+              [entries]="store.auditLog()"
+              (exportReport)="store.exportAuditReport()"
+              (exportMarkdown)="store.exportMarkdownReport()"
+              (clearLog)="store.clearAuditLog()"
+            />
+            }
+          </div>
+        </div>
+      </section>
+    </div>
+    } }
+  </main>
+
+  <footer
+    id="privacy-note"
+    class="app-footer border-border text-muted-foreground mt-auto border-t py-5 text-xs"
+  >
+    <div class="app-footer-content">
+      <div class="app-footer-brand">
+        <img class="size-5" src="favicon.svg" alt="" />
+        <span class="app-footer-wordmark">vault<span class="landing-brand-accent">lint</span></span>
+        <span class="text-muted-foreground font-normal">{{ brandTagline.join(" ") }}</span>
+      </div>
+      <p class="app-footer-privacy">
+        Vault data stays in your browser. No analytics. Optional network features run only when you
+        start them.
+      </p>
+      <div class="app-footer-meta">
+        <span>&copy; {{ currentYear }} Robert Baker · {{ brandLicense }}</span>
+        <a [href]="brandLinks.docs" target="_blank" rel="noopener">Documentation</a>
+        <a [href]="brandLinks.changelog" target="_blank" rel="noopener">Changelog</a>
+        <a [href]="brandLinks.repository" target="_blank" rel="noopener">Source code</a>
+        <details class="app-footer-notice animated-details">
+          <summary>Affiliation and trademark notice</summary>
+          <p>{{ trademarkNotice }}</p>
+        </details>
+      </div>
+    </div>
+  </footer>
+
+  @defer (when store.vaultData() !== null) {
+  <app-edit-item-dialog
+    #editDialog
+    [folders]="store.folders()"
+    (saved)="onEditSaved($event)"
+    (requestGeneratePassword)="onGenerateEditPassword()"
+    (createFolder)="onCreateFolder($event)"
+  />
+  } @defer (when confirmData() !== null) {
+  <app-confirm-dialog [data]="confirmData()" (resolved)="onConfirmResolved($event)" />
+  }
+
+  <app-guided-tour [hasVault]="store.vaultData() !== null" (action)="onGuidedTourAction($event)" />
+  <app-changelog-dialog [currentVersion]="appVersion" (opened)="onChangelogOpened()" />
+
+  <app-toast-region
+    [toasts]="store.toasts()"
+    (dismiss)="store.dismissToast($event)"
+    (pausedChange)="$event ? store.pauseToasts() : store.resumeToasts()"
+  />
+</div>

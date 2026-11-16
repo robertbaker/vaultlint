@@ -1,0 +1,42 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import type { VariantProps } from "tailwind-variants";
+
+import { card } from "./variants";
+import { withPalette, type PaletteProps } from "../../lib/palette";
+
+type CardTag = "div" | "a" | "section" | "article";
+
+type Props = (Omit<HTMLAttributes<"div">, "interactive"> &
+  Omit<HTMLAttributes<"a">, "type" | "interactive"> &
+  VariantProps<typeof card> & {
+    /** Renders as `<a>` when provided. */
+    href?: string | undefined;
+    as?: CardTag;
+  }) &
+  PaletteProps;
+
+const {
+  size = "md",
+  variant,
+  interactive: interactiveProp,
+  href,
+  as,
+  class: className,
+  ...rest
+} = Astro.props;
+
+const interactive = interactiveProp ?? Boolean(href);
+const Tag: CardTag = as ?? (href ? "a" : "div");
+---
+
+<Tag
+  {...withPalette(rest)}
+  data-sw-card
+  class={card({ size, variant, interactive, class: className })}
+  href={Tag === "a" ? href : undefined}
+  data-size={size}
+  data-slot="card"
+>
+  <slot />
+</Tag>

@@ -1,0 +1,153 @@
+---
+title: CLI Quick Start
+description: Install vaultlint and audit, clean, or convert a password vault from your terminal.
+---
+
+Run vaultlint where your vault already lives. Audits, edits, and conversions happen locally, and a dry run lets you review the plan before saving changes.
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+## Install and run
+
+### 01 — Install vaultlint
+
+Install the published package with Node.js 22.12 or newer, or run it once without installing. Pick your package manager; the choice is remembered across the site.
+
+<Tabs syncKey="pkg">
+  <TabItem label="npm">
+    ```bash
+    npm install -g vaultlint
+    # or run once
+    npx vaultlint --help
+    ```
+  </TabItem>
+  <TabItem label="pnpm">
+    ```bash
+    pnpm add -g vaultlint
+    pnpm dlx vaultlint --help
+    ```
+  </TabItem>
+  <TabItem label="Yarn">
+    ```bash
+    yarn global add vaultlint   # Yarn Classic
+    yarn dlx vaultlint --help   # Yarn 2+
+    ```
+  </TabItem>
+  <TabItem label="Bun">
+    ```bash
+    bun add -g vaultlint
+    bunx vaultlint --help
+    ```
+  </TabItem>
+  <TabItem label="From source">
+    Requires [Bun](https://bun.sh/) 1.4 or newer. In this mode, replace `vaultlint` in the examples below with `bun start --`.
+
+    ```bash
+    git clone https://github.com/robertbaker/vaultlint.git
+    cd vaultlint
+    bun run install:all
+    ```
+
+  </TabItem>
+</Tabs>
+
+### 02 — Export an unencrypted vault
+
+Export an unencrypted backup from a supported password manager or browser, then place it in the repository folder or note its full path. vaultlint supports 20 formats across 13 password manager and browser families, including JSON, CSV, KeePass XML, and 1Password 1PUX. Encrypted `.kdbx`, `.bramble`, and locked JSON exports are rejected.
+
+See [supported formats](./formats/) for the complete list.
+
+### 03 — Run a read-only audit
+
+Start with a dry run. It reports findings without changing your source file or writing an output vault:
+
+```bash
+vaultlint -i vault.json --audit --dry-run
+```
+
+For a quick overview of item counts and vault health, use:
+
+```bash
+bun start -- -i vault.json --stats
+```
+
+### 04 — Save a cleaned copy
+
+Write changes to a new file so your original export stays available as a backup. This example merges duplicates, replaces weak and reused passwords, and writes a sanitized Markdown report:
+
+```bash
+bun start -- -i vault.json -o vault-clean.json \
+  --auto-merge \
+  --fix-weak-passwords \
+  --fix-reused-passwords \
+  --export-report vault-report.md
+```
+
+## Common workflows
+
+<div class="not-content vl-feature-grid">
+  <article class="vl-cli-card">
+    <span class="vl-cli-step">Inspect</span>
+    <h3>Find weak passwords</h3>
+    <p>List only entries with weak passwords. Password values stay masked in terminal output.</p>
+    <pre tabindex="0">
+      <code>bun start -- -i vault.json --list --filter weak</code>
+    </pre>
+  </article>
+  <article class="vl-cli-card">
+    <span class="vl-cli-step">Convert</span>
+    <h3>Move between formats</h3>
+    <p>Auto-detect the source format and choose the destination from its filename.</p>
+    <pre tabindex="0">
+      <code>bun start -- -i lastpass.csv -o vault.1pux --auto-merge</code>
+    </pre>
+  </article>
+  <article class="vl-cli-card">
+    <span class="vl-cli-step">Edit</span>
+    <h3>Preview a batch change</h3>
+    <p>
+      Use regex replacements on a selected field, then remove <code>--dry-run</code> to save the
+      output.
+    </p>
+    <pre tabindex="0">
+      <code>
+        bun start -- -i vault.json -o updated.json \ --batch-edit --field uri \ --pattern '^http://'
+        --replacement 'https://' \ --dry-run
+      </code>
+    </pre>
+  </article>
+</div>
+
+## Choose how you work
+
+Use `--interactive` to walk through common tasks from a guided terminal menu:
+
+```bash
+bun start -- -i vault.json --interactive
+```
+
+Or start the local Web UI from the same CLI. It listens on `127.0.0.1` by default:
+
+```bash
+bun start -- --ui
+```
+
+## Work with a vendor CLI
+
+For supported password managers, vaultlint can read a live vault through the vendor's own CLI. Sign in and unlock with that vendor first; vaultlint keeps the export in memory and does not ask for your master password.
+
+```bash
+# Check the available integrations
+bun start -- --list-cli-providers
+
+# Audit a live Bitwarden vault without writing changes
+bun start -- --from-cli bitwarden --audit
+```
+
+Pushing changes back is available for Bitwarden. vaultlint previews the write plan, checks for changes made since the vault was read, and sends item data over the CLI's standard input. Removed entries go to Bitwarden Trash. Read the [CLI reference](./commands/) before using `--push-to-cli`.
+
+## Local by default
+
+Vault parsing, auditing, duplicate merging, and file conversion run locally. Network checks such as HIBP breach lookups, redirect checks, mobile URI validation, and AI categorization are opt-in. Passwords are masked in CLI tables and sanitized reports.
+
+To see every option and its defaults, open the [CLI reference](./commands/). For a guided walkthrough of both interfaces, see [Getting Started](../guides/getting-started/).

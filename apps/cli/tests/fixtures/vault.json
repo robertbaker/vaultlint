@@ -1,0 +1,94 @@
+{
+  "items": [
+    {
+      "id": "1",
+      "name": "Google",
+      "login": {
+        "uris": ["https://google.com"],
+        "username": "user@gmail.com",
+        "password": "password"
+      }
+    },
+    {
+      "id": "2",
+      "name": "Google",
+      "login": {
+        "uris": ["https://www.google.com"],
+        "username": "user2@gmail.com",
+        "password": "password2"
+      }
+    },
+    {
+      "id": "3",
+      "name": "Facebook",
+      "login": {
+        "uris": ["https://facebook.com"],
+        "username": "user@facebook.com",
+        "password": "password3"
+      }
+    },
+    {
+      "id": "4",
+      "name": "Twitter",
+      "login": {
+        "uris": ["https://twitter.com"],
+        "username": "user@twitter.com",
+        "password": "password4"
+      }
+    },
+    {
+      "id": "5",
+      "name": "LinkedIn",
+      "login": {
+        "uris": ["https://linkedin.com"],
+        "username": "user@linkedin.com",
+        "password": "password5"
+      }
+    },
+    {
+      "id": "6",
+      "name": "Instagram",
+      "login": {
+        "uris": ["https://instagram.com"],
+        "username": "user@instagram.com",
+        "password": "password6"
+      }
+    },
+    {
+      "id": "7",
+      "name": "Amazon",
+      "login": {
+        "uris": ["https://amazon.com"],
+        "username": "user@amazon.com",
+        "password": "password7"
+      }
+    },
+    {
+      "id": "8",
+      "name": "Netflix",
+      "login": {
+        "uris": ["https://netflix.com"],
+        "username": "user@netflix.com",
+        "password": "password8"
+      }
+    },
+    {
+      "id": "9",
+      "name": "GitHub",
+      "login": {
+        "uris": ["https://github.com"],
+        "username": "user@github.com",
+        "password": "password9"
+      }
+    },
+    {
+      "id": "10",
+      "name": "GitLab",
+      "login": {
+        "uris": ["https://gitlab.com"],
+        "username": "user@gitlab.com",
+        "password": "password10"
+      }
+    }
+  ]
+}

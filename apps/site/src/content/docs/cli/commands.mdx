@@ -1,0 +1,202 @@
+---
+title: CLI Reference
+description: Complete reference of vaultlint CLI flags for auditing, deduplicating, batch editing, format conversion, and reporting.
+---
+
+Run `vaultlint --help` to see all available flags and defaults. Commands assume the [npm package](../) is installed; when running from a source checkout, use `bun start --` in place of `vaultlint`.
+
+## Input, Output & Format Conversion
+
+| Flag                       | Description                                                                         |
+| -------------------------- | ----------------------------------------------------------------------------------- |
+| `-i, --input <path>`       | Path to the vault export file (default: `vault.json`)                               |
+| `-o, --output <path>`      | Path to save the processed vault file                                               |
+| `--input-format <format>`  | Override auto-detected input vault format                                           |
+| `--output-format <format>` | Target export format (defaults to source format, or inferred from `.1pux` / `.xml`) |
+| `--list-formats`           | List all supported password manager vault formats and exit                          |
+| `--in-place`               | Overwrite the input vault file (prompts unless `-s` is set)                         |
+| `--backup`                 | Create a `.bak` backup before overwriting an existing output file                   |
+
+## Vendor CLI Integration
+
+Read a vault straight from a password manager's CLI instead of a file. You authenticate through the CLI; `vaultlint` never asks for or stores a master password, and the vault is held in memory only (never written to a temp file). Enpass is supported through the optional third-party `enpasscli` reader; configure `VAULTLINT_ENPASS_VAULT` with the vault directory, and set the CLI's `MASTERPW` environment variable for non-interactive access. `VAULTLINT_ENPASS_KEYFILE` is optional. Enpass CLI output does not include folder hierarchy. Dashlane imports passwords, secure notes, secrets, and personal IDs; secrets and personal IDs are kept as JSON note bodies, and payment cards are not exposed through the documented personal vault commands. Keeper Commander imports records from its JSON list/get commands; unsupported record types are kept as JSON secure-note bodies.
+
+| Flag                    | Description                                                                                                                                                                                                                          |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `--from-cli <provider>` | Read the vault via a provider CLI: `bitwarden` (`bw`), `lastpass` (`lpass`), `dashlane` (`dcli`), `keeper` (`keeper`), `1password` (`op`), `proton-pass` (`pass-cli`), `nordpass` (`np`), or Enpass (`enpasscli`, community project) |
+| `--push-to-cli`         | Push the resulting changes back through the vendor CLI (Bitwarden only). Prints a plan first and asks for confirmation (`-s` skips the prompt)                                                                                       |
+| `--list-cli-providers`  | Show which providers support import and push                                                                                                                                                                                         |
+
+```bash
+# Unlock Bitwarden and export the session key it prints
+bw login
+export BW_SESSION="$(bw unlock --raw)"
+
+# Audit the live vault, read-only
+vaultlint --from-cli bitwarden --audit
+
+# Read and audit the configured default Proton Pass vault, read-only
+vaultlint --from-cli proton-pass --audit
+
+# Read and audit NordPass from its unlocked CLI session, read-only
+# Complete `np signin`, `np unlock`, and first-run consent in a terminal first.
+vaultlint --from-cli nordpass --audit
+
+# Read and audit items accessible to the configured 1Password CLI session
+vaultlint --from-cli 1password --audit
+
+# Read and audit an Enpass vault with enpasscli (set VAULTLINT_ENPASS_VAULT and MASTERPW)
+vaultlint --from-cli enpass --audit
+
+# Read and audit Dashlane passwords, secure notes, and secrets
+vaultlint --from-cli dashlane --audit
+
+# Read and audit records accessible to the configured Keeper Commander session
+vaultlint --from-cli keeper --audit
+
+# Preview merging duplicates in the live vault, then apply
+vaultlint --from-cli bitwarden --auto-merge --push-to-cli --dry-run
+vaultlint --from-cli bitwarden --auto-merge --push-to-cli
+```
+
+Pushing writes to your live vault. Updates use `bw edit`, new items use `bw create`, and removed items are moved to Bitwarden's trash (never deleted permanently). Before writing, `vaultlint` re-reads the vault and aborts if any item it would change was modified after it was read. Payloads go to the CLI over stdin, so secrets never appear in command arguments.
+
+## Auditing, Inspection & Filtering
+
+| Flag               | Description                                                                            |
+| ------------------ | -------------------------------------------------------------------------------------- |
+| `--audit`          | Run full local vault health audit (duplicates, weak/reused passwords, URIs)            |
+| `--stats`          | Display vault statistics and health score                                              |
+| `--list`           | List vault items in a formatted table (passwords masked)                               |
+| `--search <query>` | Search vault items by name, username, or URI                                           |
+| `--filter <type>`  | Filter items: `weak`, `reused`, `duplicate`, `fido`, `totp`, `malformed-uri`, `no-uri` |
+
+## Lint & Policy
+
+| Flag                     | Description                                                                                                              |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| `--lint`                 | Run the rule-based linter (findings are errors, warnings, or hints)                                                      |
+| `--fix`                  | Apply safe autofixes for enabled lint rules                                                                              |
+| `--fix-unsafe`           | Let `--fix` also apply unsafe autofixes (password regeneration, duplicate merge); requires `--fix` (an error without it) |
+| `--ruleset <preset>`     | Lint ruleset preset                                                                                                      |
+| `--config <path>`        | Lint config file (`vaultlint.config.json` or `.vaultlintrc.json`)                                                        |
+| `--rule <spec...>`       | Override a rule severity: `<rule-id>=<error\|warning\|hint\|off>`                                                        |
+| `--max-warnings <count>` | Exit nonzero when lint warnings exceed `<count>` (applies whenever the linter runs)                                      |
+| `--list-rules`           | List lint rules, severities, and autofix support                                                                         |
+
+### Config auto-discovery
+
+When `--config` is not given, vaultlint looks in the **current working directory** for `vaultlint.config.json`, then `.vaultlintrc.json`, and uses the first one it finds. It does not search parent directories. `--ruleset` and `--rule` are applied on top of the file. An explicit `--config <path>` skips discovery and fails if the file does not exist.
+
+The discovered file is parsed every time the linter runs, including implicit runs such as `--audit`, so an invalid config in the working directory makes those commands fail with a parse or validation error. Fix or remove the file, or run from another directory.
+
+### Lint exit codes
+
+`--lint` exits with `1` when any error-severity finding remains (after `--fix`, if given). `--max-warnings <count>` also exits with `1` when warnings exceed the count, even without `--lint` (for example with `--ruleset` or `--fix`). With `--sarif-baseline <path> --fail-on-new`, only findings that are new relative to the baseline fail the run. Any runtime error, such as an unreadable file or an invalid flag value, exits with `1`; otherwise the exit code is `0`.
+
+### Lint rules
+
+Run `--list-rules` for the live list. "Default" is the severity in the `recommended` preset. Safe autofixes run with `--fix`; unsafe ones also need `--fix-unsafe`.
+
+| Rule                   | Description                                                                  | Default | Autofix |
+| ---------------------- | ---------------------------------------------------------------------------- | ------- | ------- |
+| `weak-password`        | Password is shorter than 12 characters or missing a digit/special character. | error   | Unsafe  |
+| `reused-password`      | Same password is shared across multiple vault items.                         | error   | Unsafe  |
+| `malformed-uri`        | Login URI is missing a scheme or cannot be parsed as a valid URL.            | error   | Safe    |
+| `insecure-http-uri`    | Non-local login URI uses plaintext http:// instead of https://.              | warning | Safe    |
+| `duplicate-items`      | Multiple vault items of the same type share the same normalized name.        | warning | Unsafe  |
+| `duplicate-uris`       | A single item lists the same URI more than once.                             | warning | Safe    |
+| `whitespace-in-fields` | Item name, username, or URI has leading or trailing whitespace.              | hint    | Safe    |
+| `empty-folder-ref`     | Item references a folderId that does not exist in vault folders.             | warning | Safe    |
+| `missing-password`     | Login item has neither a password nor a FIDO2 passkey.                       | warning | —       |
+| `missing-item-name`    | Vault item has an empty or placeholder name.                                 | warning | —       |
+| `missing-uri`          | Login item has credentials but no associated URI.                            | hint    | —       |
+| `missing-username`     | Login item has a password but no username.                                   | hint    | —       |
+| `missing-totp`         | Login item with a password has no TOTP secret or FIDO2 passkey.              | hint    | —       |
+| `stale-password`       | Login item password has not been updated in over 365 days.                   | hint    | —       |
+
+### Ruleset presets
+
+Choose a preset with `--ruleset <recommended|strict|minimal>`, or override single rules with `--rule <rule-id>=<severity>`.
+
+| Rule                   | `recommended` | `strict` | `minimal` |
+| ---------------------- | ------------- | -------- | --------- |
+| `weak-password`        | error         | error    | error     |
+| `reused-password`      | error         | error    | error     |
+| `malformed-uri`        | error         | error    | error     |
+| `insecure-http-uri`    | warning       | error    | off       |
+| `duplicate-items`      | warning       | error    | off       |
+| `duplicate-uris`       | warning       | error    | off       |
+| `whitespace-in-fields` | hint          | warning  | off       |
+| `empty-folder-ref`     | warning       | error    | off       |
+| `missing-password`     | warning       | error    | off       |
+| `missing-item-name`    | warning       | error    | off       |
+| `missing-uri`          | hint          | warning  | off       |
+| `missing-username`     | hint          | warning  | off       |
+| `missing-totp`         | hint          | warning  | off       |
+| `stale-password`       | hint          | warning  | off       |
+
+## Deduplication, Batch Editing & Imports
+
+| Flag                        | Description                                                                         |
+| --------------------------- | ----------------------------------------------------------------------------------- |
+| `-d, --detect-duplicates`   | Detect duplicate entries (and merge unless `--dry-run` / `--audit`)                 |
+| `-m, --auto-merge`          | Automatically merge duplicate entries                                               |
+| `-b, --batch-edit`          | Perform regex batch editing (requires `--pattern` and `--replacement`)              |
+| `--field <name>`            | Target field: `name`, `uri`, `username`, or `notes` (default: `name`)               |
+| `--pattern <regex>`         | Regex pattern for batch editing (only valid with `--batch-edit`)                    |
+| `--replacement <text>`      | Replacement string for batch editing (only valid with `--batch-edit`; may be empty) |
+| `--target-mode <mode>`      | Target mode: `all`, `non-empty`, `empty`, or `clear` (default: `all`)               |
+| `--normalize`               | Normalize item names (lowercase) and URIs (origin-only)                             |
+| `--domain-mappings <path>`  | Path to JSON file with subdomain-to-domain mappings                                 |
+| `--aegis-import <path>`     | Path to unencrypted Aegis JSON export for FIDO key import                           |
+| `--merge-input <path>`      | Compare and merge entries from a second unencrypted vault export                    |
+| `--prefer-incoming`         | Prefer incoming values on conflicting matched fields                                |
+| `--migration-report <path>` | Write a sanitized JSON record of migration decisions                                |
+
+## Password and URI Checks
+
+| Flag                           | Description                                                                       |
+| ------------------------------ | --------------------------------------------------------------------------------- |
+| `--check-weak-passwords`       | Detect weak passwords                                                             |
+| `--fix-weak-passwords`         | Replace weak passwords with generated strong passwords                            |
+| `--check-reused-passwords`     | Detect passwords reused across multiple items                                     |
+| `--fix-reused-passwords`       | Replace reused passwords with unique strong passwords                             |
+| `--check-uris`                 | Audit login URIs for malformed syntax or missing schemes                          |
+| `--generate-password [length]` | Generate a strong random password and exit (default 16; minimum 12, maximum 4096) |
+
+## Opt-In Network & AI Flags
+
+| Flag                     | Description                                                                                                                              |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `--check-compromised`    | Check passwords against HIBP k-anonymity API (5-char SHA-1 prefix only)                                                                  |
+| `--check-redirects`      | Opt-in HTTP reachability check for dead links and redirects                                                                              |
+| `--fix-redirects`        | Append detected redirect targets to matching items                                                                                       |
+| `--validate-mobile-uris` | Opt-in validation for `androidapp://` and `iosapp://` URIs                                                                               |
+| `--enable-ai`            | Enable opt-in AI folder categorization                                                                                                   |
+| `--ai-organize`          | Categorize folders and clean up item names with AI                                                                                       |
+| `--ai-duplicates`        | Detect semantic, brand, and domain-alias duplicates with AI                                                                              |
+| `--ai-suggest-uris`      | Suggest missing login URIs for review; suggestions are not applied                                                                       |
+| `--ai-hygiene`           | Review naming, folder, and domain patterns with AI                                                                                       |
+| `--ai-provider <name>`   | Provider: `openai`, `anthropic`, `openrouter`, `grok`, `gemini`, `ollama`                                                                |
+| `--ai-model <model>`     | Override default model for the selected AI provider                                                                                      |
+| `--ai-base-url <url>`    | Custom base URL for AI provider (e.g., Ollama host)                                                                                      |
+| `--ai-api-key <key>`     | API key for the selected AI provider. Visible in process listings; prefer the provider's environment variable (such as `OPENAI_API_KEY`) |
+
+## Interactive Mode, Reports & Web UI
+
+| Flag                      | Description                                                                                                        |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `-I, --interactive`       | Launch interactive guided CLI menu                                                                                 |
+| `--export-report <path>`  | Export sanitized summary report (must end in `.json` or `.md`; the extension picks the format)                     |
+| `--sarif <path>`          | Export lint findings as SARIF 2.1.0                                                                                |
+| `--sarif-baseline <path>` | Compare findings against a previous SARIF report                                                                   |
+| `--fail-on-new`           | Exit nonzero only when the baseline comparison finds new errors or warnings; existing findings do not fail the run |
+| `--dry-run`               | Preview operations without writing output file                                                                     |
+| `-s, --skip-confirmation` | Skip confirmation prompts                                                                                          |
+| `--json`                  | Output results as machine-readable JSON                                                                            |
+| `-v, --verbose`           | Show detailed per-item findings                                                                                    |
+| `-q, --quiet`             | Minimal output                                                                                                     |
+| `--no-color`              | Disable ANSI color output                                                                                          |
+| `--ui`                    | Start the local Angular Web UI server on `127.0.0.1`                                                               |
+| `--port <number>`         | Port for `--ui` server, 1 to 65535 (default: `4173`)                                                               |

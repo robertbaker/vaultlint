@@ -1,0 +1,372 @@
+---
+import { BRAND_LICENSE, SUPPORTED_MANAGERS } from "@vaultlint/brand";
+
+const { data } = Astro.locals.starlightRoute.entry;
+const formats = SUPPORTED_MANAGERS;
+const { title = data.title, tagline, actions = [] } = data.hero || {};
+---
+
+<div class="vl-hero">
+  <div class="vl-hero-copy">
+    <p class="vl-eyebrow">
+      <span class="vl-dot" aria-hidden="true"></span>
+      Local-first · Open source · {BRAND_LICENSE}
+    </p>
+    <h1 id="_top" data-page-title set:html={title} />
+    {tagline && <p class="vl-tagline" set:html={tagline} />}
+    {
+      actions.length > 0 && (
+        <div class="vl-actions">
+          {actions.map(({ link: href, text, variant }, i) => (
+            <a {href} class:list={["vl-btn", { "vl-btn-primary": variant === "primary" }]}>
+              {text}
+              {i === 0 && <span aria-hidden="true">→</span>}
+            </a>
+          ))}
+        </div>
+      )
+    }
+    <ul class="vl-proof" role="list">
+      <li>No account</li>
+      <li>No telemetry</li>
+      <li>20 formats</li>
+    </ul>
+  </div>
+
+  <figure class="vl-terminal" aria-label="Example vaultlint audit output">
+    <div class="vl-terminal-bar">
+      <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+      <figcaption>vaultlint — audit</figcaption>
+    </div>
+<pre tabindex="0" aria-label="Sample terminal output"><code><span class="t-dim">$</span> vaultlint -i vault.json --audit --dry-run
+
+<span class="t-ok">✔</span> Detected <b>Bitwarden</b> (unencrypted JSON)
+<span class="t-ok">✔</span> 1,284 items · 0 network requests
+
+<span class="t-warn">●</span> 14 duplicate groups     <span class="t-dim">→ merge</span>
+<span class="t-warn">●</span> 37 weak passwords       <span class="t-dim">→ review</span>
+<span class="t-warn">●</span> 52 malformed URIs       <span class="t-dim">→ normalize</span>
+<span class="t-err">●</span> 9 reused passwords      <span class="t-dim">→ rotate</span>
+
+<span class="t-dim">example.com  •••••••••••• (masked)</span>
+<span class="t-ok">✔</span> Dry run complete. Nothing was written.<span class="t-cursor"></span></code></pre>
+    <p class="vl-terminal-note">Illustrative output. Passwords are always masked.</p>
+  </figure>
+
+  <div class="vl-works">
+    <span class="vl-works-label">Works with</span>
+    <ul role="list">
+      {formats.map((f) => <li>{f}</li>)}
+    </ul>
+  </div>
+</div>
+
+<style>
+  .vl-hero {
+    display: grid;
+    align-items: center;
+    min-width: 0;
+    gap: clamp(2rem, 5vw, 4rem);
+    padding-block: clamp(2rem, 6vw, 4.5rem);
+  }
+
+  @media (min-width: 62rem) {
+    .vl-hero {
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    }
+  }
+
+  .vl-works {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--sl-color-hairline);
+  }
+
+  .vl-hero-copy,
+  .vl-terminal {
+    min-width: 0;
+  }
+
+  @media (min-width: 62rem) {
+    .vl-works {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .vl-works-label {
+    color: var(--sl-color-accent);
+    font-family: var(--vl-font-mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .vl-works ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .vl-works li {
+    padding: 0.25rem 0.7rem;
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 999px;
+    color: var(--sl-color-gray-2);
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+
+  .vl-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0 1.25rem;
+    padding: 0.35rem 0.85rem;
+    border: 1px solid color-mix(in oklch, var(--sl-color-accent) 35%, transparent);
+    border-radius: 999px;
+    background: color-mix(in oklch, var(--sl-color-accent) 10%, transparent);
+    color: var(--sl-color-accent-high);
+    font-family: var(--vl-font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.02em;
+  }
+
+  .vl-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--sl-color-accent);
+    box-shadow: 0 0 0 3px color-mix(in oklch, var(--sl-color-accent) 25%, transparent);
+  }
+
+  h1 {
+    margin: 0;
+    color: var(--sl-color-white);
+    font-size: clamp(2.4rem, 5.6vw, 4rem);
+    font-weight: 800;
+    line-height: 1.04;
+    letter-spacing: -0.045em;
+    text-wrap: balance;
+  }
+
+  h1 :global(em) {
+    background: linear-gradient(100deg, var(--vl-teal-300), var(--vl-teal-500));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-style: normal;
+  }
+
+  :global(:root[data-theme="light"]) h1 :global(em) {
+    background-image: linear-gradient(100deg, var(--vl-teal-700), oklch(0.6 0.12 180));
+  }
+
+  .vl-tagline {
+    max-width: 34rem;
+    margin: 1.25rem 0 0;
+    color: var(--sl-color-gray-2);
+    font-size: clamp(1.05rem, 2vw, 1.25rem);
+    line-height: 1.55;
+    text-wrap: pretty;
+  }
+
+  .vl-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+
+  @media (max-width: 36rem) {
+    .vl-actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.6rem;
+    }
+
+    .vl-btn {
+      justify-content: center;
+      min-height: 3.25rem;
+      padding-inline: 0.75rem;
+      text-align: center;
+    }
+
+    .vl-btn-primary {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .vl-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.15rem;
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.75rem;
+    color: var(--sl-color-white);
+    font-weight: 600;
+    text-decoration: none;
+    transition:
+      translate 150ms ease,
+      background-color 150ms ease,
+      border-color 150ms ease;
+  }
+
+  .vl-btn:hover {
+    translate: 0 -2px;
+    border-color: var(--sl-color-accent);
+  }
+
+  .vl-btn:focus-visible,
+  pre:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 3px;
+  }
+
+  .vl-btn:not(.vl-btn-primary) {
+    background: color-mix(in oklch, var(--sl-color-white) 4%, transparent);
+  }
+
+  .vl-btn-primary {
+    border-color: transparent;
+    background: linear-gradient(135deg, var(--vl-teal-300), var(--vl-teal-500));
+    color: var(--vl-ink);
+    box-shadow: 0 8px 24px -8px color-mix(in oklch, var(--vl-teal-500) 70%, transparent);
+  }
+
+  .vl-btn-primary:hover {
+    border-color: transparent;
+    filter: brightness(1.06);
+  }
+
+  .vl-proof {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.5rem;
+    margin: 1.75rem 0 0;
+    padding: 0;
+    color: var(--sl-color-gray-3);
+    font-size: 0.875rem;
+    list-style: none;
+  }
+
+  .vl-proof li::before {
+    margin-inline-end: 0.4rem;
+    color: var(--sl-color-accent);
+    content: "✓";
+    font-weight: 700;
+  }
+
+  .vl-terminal {
+    margin: 0;
+    overflow: hidden;
+    border: 1px solid color-mix(in oklch, var(--sl-color-accent) 28%, var(--vl-ink-line));
+    border-radius: 1rem;
+    background: var(--vl-ink);
+    box-shadow:
+      0 30px 60px -20px color-mix(in oklch, var(--sl-color-accent) 30%, transparent),
+      0 0 0 1px oklch(1 0 0 / 4%) inset;
+  }
+
+  .vl-terminal-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.7rem 1rem;
+    border-bottom: 1px solid var(--vl-ink-line);
+    background: oklch(1 0 0 / 3%);
+  }
+
+  .vl-terminal-bar span {
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 50%;
+    background: oklch(1 0 0 / 14%);
+  }
+
+  figcaption {
+    margin-inline: auto;
+    padding-inline-end: 2.4rem;
+    color: oklch(0.7 0.02 255);
+    font-family: var(--vl-font-mono);
+    font-size: 0.75rem;
+  }
+
+  pre {
+    margin: 0;
+    padding: 1.25rem 1.4rem;
+    overflow-x: auto;
+    color: oklch(0.9 0.01 255);
+    font-family: var(--vl-font-mono);
+    font-size: clamp(0.72rem, 1.5vw, 0.85rem);
+    line-height: 1.75;
+  }
+
+  pre code {
+    font: inherit;
+  }
+
+  pre b {
+    color: #fff;
+  }
+
+  .t-dim {
+    color: oklch(0.65 0.02 255);
+  }
+
+  .t-ok {
+    color: var(--vl-teal-300);
+  }
+
+  .t-warn {
+    color: var(--vl-amber-400);
+  }
+
+  .t-err {
+    color: oklch(0.72 0.19 22);
+  }
+
+  .t-cursor {
+    display: inline-block;
+    width: 0.55em;
+    height: 1.05em;
+    margin-inline-start: 0.3em;
+    background: var(--vl-teal-300);
+    vertical-align: text-bottom;
+    animation: vl-blink 1.1s steps(1) infinite;
+  }
+
+  .vl-terminal-note {
+    margin: 0;
+    padding: 0 1.4rem 1rem;
+    color: oklch(0.6 0.02 255);
+    font-size: 0.72rem;
+  }
+
+  @keyframes vl-blink {
+    50% {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .t-cursor {
+      animation: none;
+    }
+
+    .vl-btn {
+      transition: none;
+    }
+
+    .vl-btn:hover {
+      translate: none;
+    }
+  }
+</style>

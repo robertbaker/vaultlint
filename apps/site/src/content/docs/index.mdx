@@ -1,0 +1,421 @@
+---
+title: Audit Your Password Vault Locally
+description: Audit, edit, and convert unencrypted password manager exports in your browser or terminal.
+template: splash
+hero:
+  title: Lint your vault. <em>Keep it local.</em>
+  tagline: Find duplicates, weak passwords, and broken URIs in your password manager export, then fix them and convert between 20 formats without anything leaving your device.
+  actions:
+    - text: Launch Web App
+      link: app/
+      variant: primary
+    - text: CLI Quick Start
+      link: cli/
+      variant: secondary
+    - text: Read the Docs
+      link: guides/getting-started/
+      variant: minimal
+---
+
+import { Icon } from "astro-icon/components";
+import heroDiagram from "../../assets/vaultlint-hero.svg";
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../../ui";
+
+<div class="not-content vl-trust">
+  <div>
+    <Icon name="material-symbols:lock-outline-rounded" aria-hidden="true" />
+    <p style="margin:0">
+      <strong>Local by default</strong>
+      <span>Parsing, editing, and conversion run on your device.</span>
+    </p>
+  </div>
+  <div>
+    <Icon name="material-symbols:toggle-on-rounded" aria-hidden="true" />
+    <p style="margin:0">
+      <strong>Network is opt-in</strong>
+      <span>
+        Breach, redirect, and mobile-link checks plus cloud AI only run when you trigger them. HIBP
+        sends a 5-character hash prefix; AI sends only item names and hostnames.
+      </span>
+    </p>
+  </div>
+  <div>
+    <Icon name="material-symbols:gpp-bad-outline-rounded" aria-hidden="true" />
+    <p style="margin:0">
+      <strong>Encrypted exports rejected</strong>
+      <span>
+        <code>.kdbx</code>, <code>.bramble</code>, and locked JSON are refused to avoid corruption.
+      </span>
+    </p>
+  </div>
+</div>
+
+<nav class="not-content vl-home-nav" aria-label="Home page sections">
+  <span class="vl-home-nav-label">On this page</span>
+  <a href="#home-features">Features</a>
+  <a href="#home-workflow">How it works</a>
+  <a href="#home-start">Choose a workflow</a>
+  <a href="#home-faq">FAQ</a>
+</nav>
+
+<span class="vl-section-label">Features</span>
+
+<h2 id="home-features">What vaultlint does</h2>
+
+<div class="not-content vl-feature-grid">
+  <Card variant="bordered" class="vl-feature-card">
+    <CardHeader>
+      <div class="mb-2 flex items-center justify-between gap-2">
+        <Badge tone="success" appearance="soft" size="sm" icon="material-symbols:swap-horiz-rounded">
+          20 Formats
+        </Badge>
+      </div>
+      <CardTitle>Cross-Format Conversion</CardTitle>
+      <CardDescription>
+      Convert unencrypted exports between password manager and browser formats.
+      </CardDescription>
+    </CardHeader>
+    <CardContent>
+      <p class="text-sm text-muted-foreground">
+        Supports JSON, RFC 4180 CSV, KeePass XML, and 1PUX ZIP. Encrypted <code>.kdbx</code>,
+        <code>.bramble</code>, and locked JSON exports are rejected. <a href="cli/formats/">See supported formats</a> or
+        <a href="cli/format-schemas/">read the full schema reference</a>.
+      </p>
+    </CardContent>
+  </Card>
+
+<Card variant="bordered" class="vl-feature-card">
+  <CardHeader>
+    <div class="mb-2 flex items-center justify-between gap-2">
+      <Badge tone="info" appearance="soft" size="sm" icon="material-symbols:merge-rounded">
+        Deduplication
+      </Badge>
+    </div>
+    <CardTitle>Duplicate Merging</CardTitle>
+    <CardDescription>
+      Inspect duplicate groups side-by-side and merge matching logins without losing fields.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    <p class="text-sm text-muted-foreground">
+      Groups matching logins, combines unique URIs, preserves custom fields and FIDO keys, and keeps
+      the most recently modified credentials.
+    </p>
+    <p class="vl-card-more">
+      <a href="guides/web-ui/">See the review workflow</a>
+    </p>
+  </CardContent>
+</Card>
+
+<Card variant="bordered" class="vl-feature-card">
+  <CardHeader>
+    <div class="mb-2 flex items-center justify-between gap-2">
+      <Badge tone="warning" appearance="soft" size="sm" icon="material-symbols:security-rounded">
+        Health &amp; HIBP
+      </Badge>
+    </div>
+    <CardTitle>Password and URI Checks</CardTitle>
+    <CardDescription>
+      Review password strength, reused passwords, malformed URIs, and service redirects.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    <p class="text-sm text-muted-foreground">
+      Generate replacement passwords, check breaches with the HIBP API, and check mobile app links.
+      HIBP receives only a 5-character SHA-1 prefix.
+    </p>
+    <p class="vl-card-more">
+      <a href="guides/password-health/">Explore password and URI checks</a>
+    </p>
+  </CardContent>
+</Card>
+
+<Card variant="bordered" class="vl-feature-card">
+  <CardHeader>
+    <div class="mb-2 flex items-center justify-between gap-2">
+      <Badge tone="neutral" appearance="soft" size="sm" icon="material-symbols:edit-rounded">
+        Batch Edit
+      </Badge>
+    </div>
+    <CardTitle>Batch Edits and Domain Mappings</CardTitle>
+    <CardDescription>
+      Preview regex search/replace across names, URIs, usernames, or notes before applying.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    <p class="text-sm text-muted-foreground">
+      Target all, empty, or non-empty fields with template variables, normalize names and URIs, and
+      map subdomains to canonical domains.
+    </p>
+    <p class="vl-card-more">
+      <a href="guides/batch-editing/">Learn about batch editing</a>
+    </p>
+  </CardContent>
+</Card>
+
+<Card variant="bordered" class="vl-feature-card">
+  <CardHeader>
+    <div class="mb-2 flex items-center justify-between gap-2">
+      <Badge
+        tone="primary"
+        appearance="soft"
+        size="sm"
+        icon="material-symbols:auto-awesome-rounded"
+      >
+        Optional AI
+      </Badge>
+    </div>
+    <CardTitle>AI Review Tools</CardTitle>
+    <CardDescription>
+      Suggest folders, possible duplicates, and missing login URLs with your chosen provider.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    <p class="text-sm text-muted-foreground">
+      AI actions only run when you trigger them. Requests include only item names and hostnames, not
+      item IDs, passwords, usernames, TOTP secrets, or notes.
+    </p>
+    <p class="vl-card-more">
+      <a href="guides/ai-categorization/">Review AI privacy details</a>
+    </p>
+  </CardContent>
+</Card>
+
+  <Card variant="bordered" class="vl-feature-card">
+    <CardHeader>
+      <div class="mb-2 flex items-center justify-between gap-2">
+        <Badge tone="primary" appearance="outline" size="sm" icon="material-symbols:key-rounded">
+          FIDO Import
+        </Badge>
+      </div>
+      <CardTitle>Aegis keys and audit reports</CardTitle>
+      <CardDescription>
+        Import Aegis FIDO keys without duplicates and export sanitized JSON or Markdown reports.
+      </CardDescription>
+    </CardHeader>
+    <CardContent>
+      <p class="text-sm text-muted-foreground">
+        Passwords are masked in output. Edits can be undone in the CLI and Web UI.
+      </p>
+      <p class="vl-card-more"><a href="guides/aegis-fido/">See the Aegis import steps</a></p>
+    </CardContent>
+  </Card>
+  <Card variant="bordered" class="vl-feature-card">
+    <CardHeader>
+      <Badge tone="info" appearance="soft" size="sm" icon="material-symbols:terminal-rounded">
+        CLI Automation
+      </Badge>
+      <CardTitle>Repeatable Local Audits</CardTitle>
+      <CardDescription>
+        Run audits from the terminal, preview edits with dry-run, and export sanitized SARIF reports
+        for CI.
+      </CardDescription>
+    </CardHeader>
+    <CardContent>
+      <p class="text-sm text-muted-foreground">
+        Use the same format adapters and vault operations as the Web UI, with JSON or Markdown
+        reports for review.
+      </p>
+      <p class="vl-card-more"><a href="cli/commands/">Browse CLI commands</a></p>
+    </CardContent>
+  </Card>
+  <Card variant="bordered" class="vl-feature-card">
+    <CardHeader>
+      <Badge tone="success" appearance="soft" size="sm" icon="material-symbols:history-rounded">
+        Change History
+      </Badge>
+      <CardTitle>Undo and Review Edits</CardTitle>
+      <CardDescription>
+        Step back through edits with multi-step undo and a session activity log in the Web UI.
+      </CardDescription>
+    </CardHeader>
+    <CardContent>
+      <p class="text-sm text-muted-foreground">
+        Export a masked audit report when you want to review findings or keep a record of the cleanup.
+      </p>
+      <p class="vl-card-more"><a href="guides/web-ui/">See activity and undo controls</a></p>
+    </CardContent>
+  </Card>
+</div>
+
+<span class="vl-section-label">Workflow</span>
+
+<h2 id="home-workflow">Three steps, zero uploads</h2>
+
+<div class="not-content vl-feature-grid vl-steps">
+  <Card class="vl-feature-card">
+    <CardHeader>
+      <Badge tone="neutral" appearance="soft" size="sm">Step 1</Badge>
+      <CardTitle>Export an unencrypted backup</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <p class="text-sm text-muted-foreground">
+        Export an unencrypted JSON, CSV, XML, or 1PUX file from your password manager and keep a
+        backup copy.
+      </p>
+    </CardContent>
+  </Card>
+
+<Card class="vl-feature-card">
+  <CardHeader>
+    <Badge tone="primary" appearance="soft" size="sm">
+      Step 2
+    </Badge>
+    <CardTitle>Review and edit</CardTitle>
+  </CardHeader>
+  <CardContent>
+    <p class="text-sm text-muted-foreground">
+      Drop the file into the Web UI or run <code>--audit --dry-run</code> in the CLI to inspect
+      findings, then merge duplicates and fix weak passwords or URIs.
+    </p>
+  </CardContent>
+</Card>
+
+  <Card class="vl-feature-card">
+    <CardHeader>
+      <Badge tone="success" appearance="soft" size="sm">Step 3</Badge>
+      <CardTitle>Export and re-import</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <p class="text-sm text-muted-foreground">
+        Download your cleaned vault in the same format or convert to another manager, alongside a
+        masked JSON or Markdown audit report.
+      </p>
+    </CardContent>
+  </Card>
+</div>
+
+<div class="not-content my-10">
+  <img
+    src={heroDiagram.src}
+    alt="vaultlint local-first architecture: unencrypted exports from password managers and browsers processed on-device into cleaned vaults and masked reports"
+    width={640}
+    height={320}
+    class="mx-auto w-full max-w-3xl rounded-xl border border-border shadow-md"
+    loading="lazy"
+    decoding="async"
+  />
+</div>
+
+<span class="vl-section-label">Choose your workflow</span>
+
+<h2 id="home-start">Start in your browser or terminal</h2>
+
+<div class="not-content vl-doc-grid vl-start-grid">
+  <Card size="sm" class="vl-doc-card vl-start-card">
+    <CardHeader>
+      <Badge tone="primary" appearance="soft" icon="material-symbols:language-rounded">
+        No install
+      </Badge>
+      <CardTitle>Use the hosted Web App</CardTitle>
+      <CardDescription>Open the app in your browser and work with an export on your device.</CardDescription>
+    </CardHeader>
+    <CardContent>
+      <p>
+        Parsing and editing run locally in your browser. Optional network checks and AI tools only
+        run when you start them.
+      </p>
+      <Button href="app/" variant="primary" size="sm" icon="material-symbols:arrow-forward-rounded">
+        Open Web App
+      </Button>
+    </CardContent>
+  </Card>
+
+  <Card size="sm" class="vl-doc-card vl-start-card">
+    <CardHeader>
+      <Badge tone="neutral" appearance="outline" icon="material-symbols:terminal-rounded">
+        Node ≥ 22.12
+      </Badge>
+      <CardTitle>Run the local CLI or Web UI</CardTitle>
+      <CardDescription>Install from npm, then audit from a terminal or start a local interface.</CardDescription>
+    </CardHeader>
+    <CardContent>
+      <p>
+        Follow the <a href="cli/">CLI Quick Start</a> for setup, audit, conversion, and local Web UI
+        commands.
+      </p>
+      <Button href="cli/" variant="outline" size="sm" icon="material-symbols:menu-book-rounded">
+        CLI Quick Start
+      </Button>
+    </CardContent>
+  </Card>
+</div>
+
+<span class="vl-section-label">FAQ</span>
+
+<h2 id="home-faq">Common questions</h2>
+
+<div class="not-content vl-faq">
+  <details>
+    <summary>Is my vault uploaded anywhere?</summary>
+    <p>
+      No. Parsing, auditing, editing, and conversion run in your browser or terminal. Network
+      features (breach checks, redirect checks, mobile link lookups, AI) are off until you start
+      them.
+    </p>
+  </details>
+  <details>
+    <summary>What does the breach check send?</summary>
+    <p>
+      Only the first 5 characters of each password's SHA-1 hash, using the HIBP k-anonymity API.
+      Full passwords and hashes never leave your device.
+    </p>
+  </details>
+  <details>
+    <summary>What do AI features see?</summary>
+    <p>
+      Only item names and hostnames, and only when you trigger an AI action. Passwords, usernames,
+      TOTP secrets, and notes are never included.
+    </p>
+  </details>
+  <details>
+    <summary>Can I open an encrypted export?</summary>
+    <p>
+      No. Encrypted exports, including <code>.kdbx</code> and locked JSON files, are rejected so
+      nothing gets corrupted. Export an unencrypted copy, work on it, then delete it securely.
+    </p>
+  </details>
+  <details>
+    <summary>Will it change my original file?</summary>
+    <p>
+      Never. You review proposed changes, then download a new file. Edits can be undone, and audit
+      reports mask every password.
+    </p>
+  </details>
+  <details>
+    <summary>Is it free?</summary>
+    <p>Yes. vaultlint is open source under GPL-3.0, with no account and no telemetry.</p>
+  </details>
+</div>
+
+<div class="not-content vl-cta">
+  <h2>Start from a backup, export a clean copy</h2>
+  <p>
+    Your original file is never modified. Review proposed changes, then download the updated vault
+    when you’re ready. Free and open source under GPL-3.0.
+  </p>
+  <div class="flex flex-wrap justify-center gap-3">
+    <Button href="app/" variant="primary" size="lg" icon="material-symbols:rocket-launch-rounded">
+      Open Web App
+    </Button>
+    <Button
+      href="guides/getting-started/"
+      variant="outline"
+      size="lg"
+      icon="material-symbols:menu-book-rounded"
+    >
+      Read the Docs
+    </Button>
+  </div>
+</div>

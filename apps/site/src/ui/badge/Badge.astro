@@ -1,0 +1,90 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import { Icon } from "astro-icon/components";
+import type { VariantProps } from "tailwind-variants";
+
+import { partClasses, type ClassesProps } from "../../lib/classes";
+import { withPalette, type PaletteProps } from "../../lib/palette";
+import { badge } from "./variants";
+
+type Part = "icon" | "dot" | "content";
+type BadgeVariantProps = VariantProps<typeof badge>;
+
+type Props = HTMLAttributes<"div"> &
+  Omit<HTMLAttributes<"a">, "type"> &
+  Omit<BadgeVariantProps, "isLink"> &
+  ClassesProps<Part> &
+  PaletteProps & {
+    icon?: string;
+    iconPosition?: "left" | "right";
+    dot?: boolean;
+    ariaLabel?: string;
+  };
+
+const {
+  variant,
+  tone,
+  appearance,
+  eyebrow,
+  shape,
+  animated,
+  glow,
+  size,
+  icon,
+  iconPosition = "left",
+  dot = false,
+  ariaLabel,
+  class: className,
+  classes,
+  ...rest
+} = Astro.props;
+
+const cls = partClasses<Part>(classes);
+const usesComposedBadgeStyle = tone !== undefined || appearance !== undefined;
+const resolvedVariant = (usesComposedBadgeStyle ? null : variant) as BadgeVariantProps["variant"];
+const finalTone = usesComposedBadgeStyle ? (tone ?? "neutral") : undefined;
+const finalAppearance = usesComposedBadgeStyle ? (appearance ?? "soft") : undefined;
+const Tag = rest.href ? "a" : "div";
+const isTargetBlank = Tag === "a" && rest.target === "_blank";
+const linkAttrs = isTargetBlank ? { rel: "noopener noreferrer" } : {};
+---
+
+<Tag
+  data-sw-badge
+  class={badge({
+    variant: resolvedVariant,
+    tone: finalTone,
+    appearance: finalAppearance,
+    eyebrow,
+    shape,
+    animated,
+    glow,
+    size,
+    isLink: Boolean(rest.href),
+    class: className,
+  })}
+  aria-label={ariaLabel}
+  {...linkAttrs}
+  {...withPalette(rest)}
+  data-slot="badge"
+>
+  <slot name="prefix" />
+  {dot && <slot name="dot"><span class={cls("dot", "size-2 rounded-full bg-current")} aria-hidden="true" /></slot>}
+  {
+    iconPosition === "left" && (
+      <slot name="icon">
+        {icon && <Icon name={icon} class={cls("icon")} aria-hidden="true" />}
+      </slot>
+    )
+  }
+  <slot />
+  {
+    iconPosition === "right" && (
+      <slot name="icon">
+        {icon && <Icon name={icon} class={cls("icon")} aria-hidden="true" />}
+      </slot>
+    )
+  }
+  <slot name="suffix" />
+  {isTargetBlank && <span class="sr-only"> (opens in a new tab)</span>}
+</Tag>

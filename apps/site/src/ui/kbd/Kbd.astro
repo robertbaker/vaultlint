@@ -1,0 +1,14 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+import { kbd } from "./variants";
+import { withPalette, type PaletteProps } from "../../lib/palette";
+
+type Props = (HTMLAttributes<"kbd">) & PaletteProps;
+
+const { class: className, ...rest } = Astro.props;
+---
+
+<kbd {...withPalette(rest)} data-sw-kbd class={kbd({ class: className })} data-slot="kbd">
+  <slot />
+</kbd>

@@ -1,0 +1,13 @@
+{
+  "fidoKeys": [
+    {
+      "username": "user@gmail.com",
+      "fido2Credentials": {
+        "credentialId": "123456789",
+        "keyType": "FIDO2",
+        "rpId": "google.com",
+        "userName": "user@gmail.com"
+      }
+    }
+  ]
+}
