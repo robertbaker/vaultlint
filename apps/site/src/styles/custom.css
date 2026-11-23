@@ -1,6 +1,6 @@
 @import "tailwindcss";
 @import "@vaultlint/brand/tokens.css";
-@import "@fontsource-variable/bricolage-grotesque/wght.css";
+@import "@vaultlint/brand/typography.css";
 
 /* ───────────────────────────────────────────────────────────
    vaultlint brand

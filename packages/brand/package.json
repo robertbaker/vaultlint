@@ -11,11 +11,15 @@
   "exports": {
     ".": "./src/index.ts",
     "./tokens.css": "./tokens.css",
+    "./typography.css": "./typography.css",
     "./logo.svg": "./logo.svg"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "bun test"
+  },
+  "dependencies": {
+    "@fontsource-variable/bricolage-grotesque": "^5.3.0"
   },
   "devDependencies": {
     "typescript": "^7.0.2"

@@ -1,0 +1,29 @@
+/*
+ * Shared typographic base for the Astro site and the Angular Web UI, so text renders identically
+ * in both. Font families themselves are tokens in tokens.css; this applies them.
+ */
+@import "@fontsource-variable/bricolage-grotesque/wght.css";
+
+html {
+  font-family: var(--vl-font-sans);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--vl-font-sans);
+  font-feature-settings: "cv11", "ss01";
+  font-variant-numeric: lining-nums;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+:where(h1, h2, h3, h4) {
+  font-family: var(--vl-font-brand);
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+:where(code, kbd, samp, pre) {
+  font-family: var(--vl-font-mono);
+}

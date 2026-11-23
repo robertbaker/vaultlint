@@ -1,6 +1,6 @@
 @import "tailwindcss";
 @import "@vaultlint/brand/tokens.css";
-@import "@fontsource-variable/bricolage-grotesque/wght.css";
+@import "@vaultlint/brand/typography.css";
 @import "tw-animate-css";
 @custom-variant data-open (&:where([data-state="open"], [data-open]));
 @custom-variant data-closed (&:where([data-state="closed"], [data-closed]));
