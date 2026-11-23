@@ -348,6 +348,11 @@ header.header {
     visibility 200ms;
 }
 
+/* The header is sticky (in flow), so Starlight's fixed-header offset only adds a gap. */
+.page .main-frame {
+  padding-top: 0;
+}
+
 header.header.is-scroll-hidden {
   visibility: hidden;
   opacity: 0;
