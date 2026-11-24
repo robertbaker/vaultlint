@@ -1,4 +1,13 @@
-import { Component, computed, ElementRef, input, output, signal, viewChild } from "@angular/core";
+import {
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  input,
+  output,
+  signal,
+  viewChild,
+} from "@angular/core";
 import { HlmButtonImports } from "@spartan-ng/helm/button";
 
 import type { VaultTabId } from "../../core/vault.models";
@@ -7,17 +16,27 @@ export type GuidedTourAction = "upload" | "export" | VaultTabId;
 
 @Component({
   selector: "app-guided-tour",
+  host: { "(window:resize)": "reposition()", "(window:scroll)": "reposition()" },
   imports: [...HlmButtonImports],
   template: `
     <dialog
       #tourDialog
-      class="guided-tour-dialog"
-      closedby="any"
+      [class]="'guided-tour-dialog is-' + placement()"
+      (cancel)="onCancel()"
       aria-labelledby="guided-tour-title"
       (keydown)="onKeydown($event)"
       (pointerdown)="onBackdropPointerDown($event)"
       (pointerup)="onBackdropPointerUp($event)"
     >
+      <div
+        class="guided-tour-spotlight"
+        [class.is-hidden]="!spot()"
+        [style.top.px]="spot()?.top"
+        [style.left.px]="spot()?.left"
+        [style.width.px]="spot()?.width"
+        [style.height.px]="spot()?.height"
+        aria-hidden="true"
+      ></div>
       <div class="guided-tour-content">
         <div class="guided-tour-topline">
           <p>
@@ -108,6 +127,7 @@ export class GuidedTourComponent {
   protected readonly steps = [
     {
       shortTitle: "Import",
+      target: "#upload-vault",
       title: "Bring in a vault export",
       description:
         "Choose an unencrypted export or import from a supported local CLI. Encrypted exports are rejected before they can be changed.",
@@ -120,6 +140,7 @@ export class GuidedTourComponent {
     },
     {
       shortTitle: "Review",
+      target: "#workspace-section-review",
       title: "See what needs attention",
       description:
         "Vault checks, Duplicates, and Security & links surface formatting issues, duplicate entries, and weak or reused passwords.",
@@ -132,6 +153,7 @@ export class GuidedTourComponent {
     },
     {
       shortTitle: "Improve",
+      target: "#workspace-section-organize",
       title: "Make changes with control",
       description:
         "Edit individual entries, merge duplicates, run batch updates, or strengthen passwords. Every edit can be undone.",
@@ -144,6 +166,7 @@ export class GuidedTourComponent {
     },
     {
       shortTitle: "Export",
+      target: "[data-export-vault]",
       title: "Save a clean copy",
       description:
         "Choose the format you need and export a new file. Your original export is never modified.",
@@ -156,49 +179,108 @@ export class GuidedTourComponent {
     },
   ] as const;
 
+  protected readonly spot = signal<{
+    top: number;
+    left: number;
+    width: number;
+    height: number;
+  } | null>(null);
+  protected readonly placement = signal<"center" | "top" | "bottom">("center");
+  private readonly isOpen = signal(false);
+
+  constructor() {
+    effect(() => {
+      this.step();
+      if (!this.isOpen()) return;
+      // Wait for the dialog content to render before measuring.
+      requestAnimationFrame(() => this.focusTarget());
+    });
+  }
+
   private readonly dialog = viewChild.required<ElementRef<HTMLDialogElement>>("tourDialog");
-  private readonly supportsClosedBy =
-    typeof HTMLDialogElement !== "undefined" && "closedBy" in HTMLDialogElement.prototype;
   private pressedOutside = false;
 
   open(): void {
     this.pressedOutside = false;
     this.step.set(0);
     this.dialog().nativeElement.showModal();
+    this.isOpen.set(true);
+  }
+
+  protected onCancel(): void {
+    this.isOpen.set(false);
+    this.spot.set(null);
   }
 
   protected close(): void {
     this.pressedOutside = false;
+    this.onCancel();
     this.dialog().nativeElement.close();
   }
 
-  protected onBackdropPointerDown(event: PointerEvent): void {
-    if (this.supportsClosedBy) {
-      this.pressedOutside = false;
+  protected reposition(): void {
+    if (!this.isOpen()) return;
+    this.measure();
+  }
+
+  private findTarget(): HTMLElement | null {
+    const selector = this.currentStep().target;
+    for (const el of document.querySelectorAll<HTMLElement>(selector)) {
+      const rect = el.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) return el;
+    }
+    return null;
+  }
+
+  private focusTarget(): void {
+    const el = this.findTarget();
+    if (!el) {
+      this.measure();
       return;
     }
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    el.scrollIntoView({ block: "center", behavior: reduced ? "auto" : "smooth" });
+    this.measure();
+    // Smooth scrolling is asynchronous; re-measure once it settles.
+    setTimeout(() => this.measure(), 450);
+  }
+
+  private measure(): void {
+    if (!this.isOpen()) return;
+    const el = this.findTarget();
+    if (!el) {
+      this.spot.set(null);
+      this.placement.set("center");
+      return;
+    }
+    const pad = 6;
+    const rect = el.getBoundingClientRect();
+    this.spot.set({
+      top: rect.top - pad,
+      left: rect.left - pad,
+      width: rect.width + pad * 2,
+      height: rect.height + pad * 2,
+    });
+    // Put the card on whichever side of the target has more room.
+    this.placement.set(rect.top + rect.height / 2 < innerHeight / 2 ? "bottom" : "top");
+  }
+
+  protected onBackdropPointerDown(event: PointerEvent): void {
     this.pressedOutside = this.isOutsideDialog(event);
   }
 
   protected onBackdropPointerUp(event: PointerEvent): void {
     const wasOutside = this.pressedOutside;
     this.pressedOutside = false;
-    if (this.supportsClosedBy || !wasOutside) return;
+    if (!wasOutside) return;
     if (this.isOutsideDialog(event)) {
       this.close();
     }
   }
 
   private isOutsideDialog(event: PointerEvent): boolean {
-    const dialog = this.dialog().nativeElement;
-    if (event.target !== dialog) return false;
-    const rect = dialog.getBoundingClientRect();
-    return (
-      event.clientX < rect.left ||
-      event.clientX > rect.right ||
-      event.clientY < rect.top ||
-      event.clientY > rect.bottom
-    );
+    // The dialog fills the viewport, so a hit on the dialog itself is a hit outside the card.
+    return event.target === this.dialog().nativeElement;
   }
 
   protected onKeydown(event: KeyboardEvent): void {

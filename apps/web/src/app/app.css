@@ -1025,28 +1025,80 @@ h3,
 }
 
 .guided-tour-dialog {
-  width: min(42rem, calc(100dvw - 2rem));
+  position: fixed;
+  inset: 0;
+  width: 100dvw;
   max-width: none;
-  max-height: min(44rem, calc(100dvh - 2rem));
-  margin: auto;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
   padding: 0;
-  overflow: auto;
-  border: 1px solid var(--border);
-  border-radius: 1rem;
-  background: var(--card);
+  overflow: hidden;
+  border: 0;
+  background: transparent;
   color: var(--card-foreground);
-  box-shadow: 0 2rem 6rem oklch(0 0 0 / 28%);
 }
 
 .guided-tour-dialog::backdrop {
-  background: oklch(0.12 0.02 264 / 62%);
-  backdrop-filter: blur(4px);
+  background: transparent;
+}
+
+/* Dims the page and cuts a hole around the highlighted element. */
+.guided-tour-spotlight {
+  position: fixed;
+  border-radius: 0.75rem;
+  box-shadow:
+    0 0 0 2px var(--primary),
+    0 0 0 100vmax oklch(0.12 0.02 264 / 64%);
+  pointer-events: none;
+  transition:
+    top 0.3s ease,
+    left 0.3s ease,
+    width 0.3s ease,
+    height 0.3s ease;
+}
+
+.guided-tour-spotlight.is-hidden {
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  box-shadow: 0 0 0 100vmax oklch(0.12 0.02 264 / 64%);
 }
 
 .guided-tour-content {
+  position: fixed;
+  left: 50%;
+  width: min(36rem, calc(100dvw - 1rem));
+  max-height: calc(100dvh - 1rem);
+  overflow: auto;
+  transform: translateX(-50%);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: var(--card);
+  box-shadow: 0 2rem 6rem oklch(0 0 0 / 28%);
   display: grid;
   gap: 1.4rem;
   padding: clamp(1.1rem, 4vw, 2rem);
+}
+
+.guided-tour-dialog.is-center .guided-tour-content {
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.guided-tour-dialog.is-top .guided-tour-content {
+  top: 0.5rem;
+}
+
+.guided-tour-dialog.is-bottom .guided-tour-content {
+  bottom: 0.5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .guided-tour-spotlight {
+    transition: none;
+  }
 }
 
 .guided-tour-topline,
@@ -1131,7 +1183,7 @@ h3,
 }
 
 .guided-tour-copy {
-  min-height: 13rem;
+  min-height: 10rem;
   padding-block: clamp(0.4rem, 2vw, 1.25rem);
 }
 
@@ -1454,15 +1506,10 @@ h3,
     width: 0.6rem;
   }
 
-  .guided-tour-dialog {
-    width: calc(100dvw - 1rem);
-    max-height: calc(100dvh - 1rem);
-    border-radius: 0.85rem;
-  }
-
   .guided-tour-content {
     gap: 1rem;
     padding: 1rem;
+    border-radius: 0.85rem;
   }
 
   .guided-tour-progress {
