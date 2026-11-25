@@ -322,11 +322,11 @@ import type { ThemeMode } from "../../core/vault.models";
                   </select>
                 </label>
 
-                <div class="border-border grid gap-1.5 border-t pt-2">
+                <div class="border-border grid gap-1 border-t pt-2">
                   <button
                     hlmBtn
                     type="button"
-                    variant="outline"
+                    variant="ghost"
                     size="sm"
                     class="justify-start"
                     (click)="onCompareFormatsClick()"
@@ -337,7 +337,7 @@ import type { ThemeMode } from "../../core/vault.models";
                   <button
                     hlmBtn
                     type="button"
-                    variant="outline"
+                    variant="ghost"
                     size="sm"
                     class="justify-start"
                     (click)="onExportReportClick()"
@@ -348,7 +348,7 @@ import type { ThemeMode } from "../../core/vault.models";
                   <button
                     hlmBtn
                     type="button"
-                    variant="outline"
+                    variant="ghost"
                     size="sm"
                     class="justify-start"
                     aria-haspopup="dialog"
@@ -360,7 +360,7 @@ import type { ThemeMode } from "../../core/vault.models";
                   <button
                     hlmBtn
                     type="button"
-                    variant="outline"
+                    variant="ghost"
                     size="sm"
                     class="justify-between"
                     data-open-changelog

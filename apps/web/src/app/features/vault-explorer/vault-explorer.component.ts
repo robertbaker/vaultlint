@@ -321,7 +321,12 @@ const columnHelper = createColumnHelper<typeof features, ExplorerRow>();
         <!-- Touch-friendly mobile card list -->
         <div role="list" aria-label="Vault items" class="space-y-2.5 @[44rem]:hidden">
           @for (row of table.getRowModel().rows; track row.original.key) {
-            <article role="listitem" class="border-border bg-card rounded-lg border p-3 shadow-xs">
+            <article
+              role="listitem"
+              class="border-border bg-card rounded-lg border p-3 shadow-xs transition-colors"
+              [class.border-primary/50]="row.getIsSelected()"
+              [class.bg-primary/5]="row.getIsSelected()"
+            >
               <div class="-mt-1 -ml-2 flex items-center gap-1">
                 <label class="grid size-11 shrink-0 cursor-pointer place-items-center rounded-md">
                   <input
@@ -561,7 +566,11 @@ const columnHelper = createColumnHelper<typeof features, ExplorerRow>();
             </thead>
             <tbody hlmTBody>
               @for (row of table.getRowModel().rows; track row.original.key) {
-                <tr hlmTr class="content-auto">
+                <tr
+                  hlmTr
+                  class="content-auto"
+                  [attr.data-state]="row.getIsSelected() ? 'selected' : null"
+                >
                   @for (cell of row.getAllCells(); track cell.id) {
                     <td hlmTd [class]="cell.column.id === 'actions' ? 'text-right' : ''">
                       <ng-container *flexRenderCell="cell; let value">

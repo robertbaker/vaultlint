@@ -59,8 +59,12 @@ import type {
                         : 'var(--destructive)'
                   "
                 ></progress>
-                <span class="progress-ring-content text-xs font-bold" aria-hidden="true">
-                  {{ healthScore() }}%
+                <span
+                  class="progress-ring-content flex flex-col items-center leading-none"
+                  aria-hidden="true"
+                >
+                  <span class="text-xs font-bold">{{ healthScore() }}%</span>
+                  <span class="text-muted-foreground text-[9px] font-semibold">Health</span>
                 </span>
               </div>
 
