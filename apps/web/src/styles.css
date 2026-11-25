@@ -111,6 +111,10 @@
     text-wrap: pretty;
   }
 
+  [data-slot="native-select"] {
+    appearance: none;
+  }
+
   dialog {
     /* Tailwind's preflight zeroes margins, which would pin modal dialogs to the top-left corner. */
     margin: auto;

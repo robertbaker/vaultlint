@@ -196,30 +196,30 @@ export interface EditItemResult {
             </div>
             @if (password()) {
               <div class="space-y-1.5 pt-1 text-xs">
-                <div class="grid grid-cols-3 gap-1" aria-hidden="true">
+                <div class="grid grid-cols-3 gap-1.5" aria-hidden="true">
                   <div
-                    class="h-1 rounded-full transition-colors"
+                    class="h-1.5 rounded-full transition-colors"
                     [class]="
                       passwordStrength().score >= 1
                         ? passwordStrength().strong
                           ? 'bg-success'
                           : 'bg-warning'
-                        : 'bg-muted'
+                        : 'bg-border'
                     "
                   ></div>
                   <div
-                    class="h-1 rounded-full transition-colors"
+                    class="h-1.5 rounded-full transition-colors"
                     [class]="
                       passwordStrength().score >= 2
                         ? passwordStrength().strong
                           ? 'bg-success'
                           : 'bg-warning'
-                        : 'bg-muted'
+                        : 'bg-border'
                     "
                   ></div>
                   <div
-                    class="h-1 rounded-full transition-colors"
-                    [class]="passwordStrength().strong ? 'bg-success' : 'bg-muted'"
+                    class="h-1.5 rounded-full transition-colors"
+                    [class]="passwordStrength().strong ? 'bg-success' : 'bg-border'"
                   ></div>
                 </div>
                 <div class="flex flex-wrap items-center gap-1.5">

@@ -408,7 +408,7 @@
               result.formatName) {
               <tr class="border-t align-top">
                 <th scope="row" class="py-2 pr-3 font-medium">
-                  <div class="flex flex-wrap items-center gap-1.5">
+                  <div class="flex flex-nowrap items-center gap-1.5 whitespace-nowrap">
                     <span>{{ result.ok ? result.report.formatName : result.formatName }}</span>
                     @if (isLosslessCoverage(result)) {
                     <span hlmBadge variant="success" size="sm">Lossless</span>
@@ -512,9 +512,9 @@
             <h2>{{ activeSection().label }}</h2>
             <p>{{ activeSection().description }}</p>
           </div>
-          <span class="workspace-local-note">Local-first workspace</span>
+          <span class="workspace-local-note hidden sm:inline">Local-first workspace</span>
         </header>
-        <div hlmCardContent class="pt-4">
+        <div hlmCardContent class="pt-4 pb-5">
           <div [hidden]="activeSection().id !== 'items'">
             <app-vault-explorer
               [rows]="filteredRows()"

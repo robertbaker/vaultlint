@@ -36,7 +36,7 @@ import type { AuditLogEntry } from "../../core/vault.models";
         </div>
         <div class="flex flex-wrap gap-2">
           @if (entries().length > 0) {
-            <button hlmBtn variant="ghost" size="sm" (click)="clearLog.emit()">Clear Log</button>
+            <button hlmBtn variant="outline" size="sm" (click)="clearLog.emit()">Clear Log</button>
           }
           <button hlmBtn variant="outline" size="sm" (click)="exportReport.emit()">
             <ng-icon name="matDownloadRound" class="size-4" aria-hidden="true" />

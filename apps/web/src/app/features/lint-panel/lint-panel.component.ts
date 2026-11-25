@@ -434,9 +434,7 @@ const SEVERITY_RANK: Record<ActiveLintSeverity, number> = {
 
                 <div class="border-border divide-border divide-y border-t px-3.5">
                   @for (finding of group.findings; track $index) {
-                    <div
-                      class="content-auto flex flex-wrap items-center justify-between gap-2 py-2.5"
-                    >
+                    <div class="flex flex-wrap items-center justify-between gap-2 py-2.5">
                       <div class="min-w-0 flex-1 space-y-0.5">
                         <div class="text-sm font-medium">{{ finding.itemName }}</div>
                         <p class="text-muted-foreground text-xs">{{ finding.message }}</p>
