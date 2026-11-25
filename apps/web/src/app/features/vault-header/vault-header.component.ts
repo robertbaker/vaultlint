@@ -197,6 +197,7 @@ import type { ThemeMode } from "../../core/vault.models";
                 size="sm"
                 [disabled]="!canUndo()"
                 (click)="undo.emit()"
+                aria-keyshortcuts="Control+Z"
                 title="Undo (Ctrl+Z)"
               >
                 <ng-icon name="matUndoRound" class="size-4" aria-hidden="true" />
@@ -208,6 +209,7 @@ import type { ThemeMode } from "../../core/vault.models";
                 size="sm"
                 [disabled]="!canRedo()"
                 (click)="redo.emit()"
+                aria-keyshortcuts="Control+Y"
                 title="Redo (Ctrl+Y)"
               >
                 <ng-icon name="matRedoRound" class="size-4" aria-hidden="true" />

@@ -263,7 +263,7 @@ const columnHelper = createColumnHelper<typeof features, ExplorerRow>();
       <!-- Bulk action bar -->
       @if (selectedIndices().length > 0) {
         <div
-          class="border-border bg-muted/40 flex flex-wrap items-center justify-between gap-2 rounded-md border px-3 py-2 text-xs"
+          class="border-primary/30 bg-primary/5 flex flex-wrap items-center justify-between gap-2 rounded-md border px-3 py-2 text-xs"
         >
           <span class="font-medium">
             {{ selectedIndices().length }}
@@ -304,18 +304,29 @@ const columnHelper = createColumnHelper<typeof features, ExplorerRow>();
       @if (table.getRowModel().rows.length === 0) {
         <hlm-empty class="border">
           <div hlmEmptyHeader>
-            <div hlmEmptyTitle>No vault items match</div>
+            <div hlmEmptyTitle>
+              {{ hasActiveFilters() ? "No vault items match" : "No vault items yet" }}
+            </div>
             <div hlmEmptyDescription>
-              Try a different search query or clear your active filters.
+              {{
+                hasActiveFilters()
+                  ? "Try a different search query or clear your active filters."
+                  : "Add an item to start building this vault."
+              }}
             </div>
           </div>
-          @if (hasActiveFilters()) {
-            <div hlmEmptyContent>
+          <div hlmEmptyContent>
+            @if (hasActiveFilters()) {
               <button hlmBtn variant="outline" size="sm" (click)="clearFilters()">
                 Clear Filters
               </button>
-            </div>
-          }
+            } @else {
+              <button hlmBtn variant="default" size="sm" (click)="addItem.emit()">
+                <ng-icon name="matAddRound" class="size-4" aria-hidden="true" />
+                Add Item
+              </button>
+            }
+          </div>
         </hlm-empty>
       } @else {
         <!-- Touch-friendly mobile card list -->

@@ -305,6 +305,7 @@ const SEVERITY_RANK: Record<ActiveLintSeverity, number> = {
               type="button"
               class="shrink-0 tabular-nums"
               [variant]="severityFilter() === 'all' ? 'default' : 'outline'"
+              [attr.aria-pressed]="severityFilter() === 'all'"
               size="sm"
               (click)="severityFilter.set('all')"
             >
@@ -315,6 +316,7 @@ const SEVERITY_RANK: Record<ActiveLintSeverity, number> = {
               type="button"
               class="shrink-0 tabular-nums"
               [variant]="severityFilter() === 'error' ? 'destructive' : 'outline'"
+              [attr.aria-pressed]="severityFilter() === 'error'"
               size="sm"
               (click)="severityFilter.set('error')"
             >
@@ -325,6 +327,7 @@ const SEVERITY_RANK: Record<ActiveLintSeverity, number> = {
               type="button"
               class="shrink-0 tabular-nums"
               [variant]="severityFilter() === 'warning' ? 'default' : 'outline'"
+              [attr.aria-pressed]="severityFilter() === 'warning'"
               size="sm"
               (click)="severityFilter.set('warning')"
             >
@@ -335,6 +338,7 @@ const SEVERITY_RANK: Record<ActiveLintSeverity, number> = {
               type="button"
               class="shrink-0 tabular-nums"
               [variant]="severityFilter() === 'hint' ? 'default' : 'outline'"
+              [attr.aria-pressed]="severityFilter() === 'hint'"
               size="sm"
               (click)="severityFilter.set('hint')"
             >
@@ -376,6 +380,19 @@ const SEVERITY_RANK: Record<ActiveLintSeverity, number> = {
               <div hlmEmptyTitle>No lint findings</div>
               <div hlmEmptyDescription>No lint findings match the current filter and ruleset.</div>
             </div>
+            @if (severityFilter() !== "all") {
+              <div hlmEmptyContent>
+                <button
+                  hlmBtn
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  (click)="severityFilter.set('all')"
+                >
+                  Show all findings
+                </button>
+              </div>
+            }
           </hlm-empty>
         } @else if (viewMode() === "grouped") {
           <div class="space-y-2.5">
