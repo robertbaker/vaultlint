@@ -44,7 +44,7 @@ export interface VaultFilePayload {
             <ng-content select="[slot=actions]" />
             <button hlmBtn variant="outline" size="xs" type="button" (click)="reloadInput.click()">
               <ng-icon name="matUploadFileRound" class="size-3.5" aria-hidden="true" />
-              Load Another Vault
+              Load another vault
             </button>
             <input
               #reloadInput
@@ -55,10 +55,18 @@ export interface VaultFilePayload {
               aria-hidden="true"
               (change)="onFileSelected($event)"
             />
-            <button hlmBtn variant="ghost" size="xs" (click)="loadSample.emit()">
-              Reload Sample
+            <button hlmBtn variant="outline" size="xs" (click)="loadSample.emit()">
+              Reload sample
             </button>
-            <button hlmBtn variant="ghost" size="xs" (click)="clearVault.emit()">Clear</button>
+            <button
+              hlmBtn
+              variant="outline"
+              size="xs"
+              class="hover:text-destructive-readable"
+              (click)="clearVault.emit()"
+            >
+              Clear
+            </button>
           </div>
         </div>
       </section>

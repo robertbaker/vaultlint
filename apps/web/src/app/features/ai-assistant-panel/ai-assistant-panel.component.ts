@@ -126,7 +126,7 @@ import type { AiResolvedDuplicateGroup } from "../../core/vault.models";
       </section>
 
       <div class="grid gap-4 @2xl:grid-cols-2">
-        <section hlmCard size="sm">
+        <section hlmCard size="sm" class="flex flex-col">
           <div hlmCardHeader>
             <h4 hlmCardTitle>Folder suggestions and name cleanup</h4>
             <p hlmCardDescription>
@@ -134,7 +134,7 @@ import type { AiResolvedDuplicateGroup } from "../../core/vault.models";
               like "Login - GitHub (2023)".
             </p>
           </div>
-          <div hlmCardContent class="space-y-3">
+          <div hlmCardContent class="flex flex-1 flex-col justify-between gap-3">
             <div class="flex flex-wrap gap-2">
               <button
                 hlmBtn
@@ -165,7 +165,7 @@ import type { AiResolvedDuplicateGroup } from "../../core/vault.models";
           </div>
         </section>
 
-        <section hlmCard size="sm">
+        <section hlmCard size="sm" class="flex flex-col">
           <div hlmCardHeader>
             <h4 hlmCardTitle>Missing URI Suggestions</h4>
             <p hlmCardDescription>
@@ -173,7 +173,7 @@ import type { AiResolvedDuplicateGroup } from "../../core/vault.models";
               applying it.
             </p>
           </div>
-          <div hlmCardContent class="space-y-3">
+          <div hlmCardContent class="flex flex-1 flex-col justify-between gap-3">
             <p class="text-muted-foreground text-xs">
               Verify each domain on the service's official site before applying it; an incorrect
               login URI can expose credentials if autofill is used.

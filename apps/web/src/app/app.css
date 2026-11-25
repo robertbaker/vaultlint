@@ -727,6 +727,7 @@ h3,
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr);
   gap: clamp(2rem, 4vw, 3.5rem);
   align-items: start;
+  padding-top: clamp(0.75rem, 2vh, 1.5rem);
   scroll-margin-top: 6rem;
 }
 
@@ -916,8 +917,8 @@ h3,
   background: color-mix(in oklch, var(--card) 94%, transparent);
   -webkit-backdrop-filter: blur(18px) saturate(160%);
   backdrop-filter: blur(18px) saturate(160%);
-  padding: 0.25rem max(0.25rem, env(safe-area-inset-right, 0px))
-    max(0.35rem, env(safe-area-inset-bottom, 0px)) max(0.25rem, env(safe-area-inset-left, 0px));
+  padding: 0.35rem max(0.35rem, env(safe-area-inset-right, 0px))
+    max(0.45rem, env(safe-area-inset-bottom, 0px)) max(0.35rem, env(safe-area-inset-left, 0px));
 }
 
 @supports not (backdrop-filter: blur(1px)) {
@@ -962,9 +963,9 @@ h3,
 .workspace-nav-btn.is-active::before {
   content: "";
   position: absolute;
-  inset-block-start: 0;
-  inset-inline: 20%;
-  border-block-start: 3px solid var(--primary);
+  inset-block-start: 0.125rem;
+  inset-inline: 22%;
+  border-block-start: 2.5px solid var(--primary);
   border-radius: 999px;
 }
 
