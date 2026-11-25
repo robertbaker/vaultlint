@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.3.0](https://github.com/robertbaker/vaultlint/compare/v1.2.0...v1.3.0) (2026-11-25)
+
+### Features
+
+- **web:** highlight selected rows, streamline header menu, and label security ring ([2868e26](https://github.com/robertbaker/vaultlint/commit/2868e26cae98f49246c7449f5bb4467c8f99654a))
+
 ## [1.2.0](https://github.com/robertbaker/vaultlint/compare/v1.1.0...v1.2.0) (2026-11-25)
 
 ### Features
