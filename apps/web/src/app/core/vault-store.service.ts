@@ -92,6 +92,10 @@ export type FormatCoverageResult =
   | { ok: true; report: VaultRoundTripReport }
   | { ok: false; formatName: string; error: string };
 
+function plural(count: number, singular: string, pluralForm = `${singular}s`): string {
+  return `${count} ${count === 1 ? singular : pluralForm}`;
+}
+
 /** Readable message for anything thrown (including non-Error values and AiResponseError). */
 function errorMessage(err: unknown): string {
   if (err instanceof Error && err.message) return err.message;
@@ -820,7 +824,7 @@ export class VaultStoreService {
       const nextMappings = { ...existing, ...suggestions };
       this.domainMappings.set(nextMappings);
       this.saveMappings(nextMappings);
-      this.notify(`Suggested ${added} subdomain mapping(s) from vault URIs.`);
+      this.notify(`Suggested ${plural(added, "subdomain mapping")} from vault URIs.`);
     } else {
       this.notify("No new subdomain mappings detected.");
     }
@@ -1190,7 +1194,9 @@ export class VaultStoreService {
       this.compromisedIds.set(foundIds);
       const latest = this.vaultData();
       if (latest) this.pruneCompromised(latest);
-      this.notify(`HIBP check complete: ${this.compromisedIds().size} breached password(s) found.`);
+      this.notify(
+        `HIBP check complete: ${plural(this.compromisedIds().size, "breached password")} found.`,
+      );
     } catch (err) {
       if (generation === this.vaultGeneration()) {
         this.notify(`HIBP check failed: ${errorMessage(err)}`);
@@ -1299,7 +1305,7 @@ export class VaultStoreService {
       this.redirectFindings.set(liveRedirects);
       this.deadLinkFindings.set(liveDeadLinks);
       this.notify(
-        `Link check complete: ${liveRedirects.length} redirect(s), ${liveDeadLinks.length} unreachable/CORS.`,
+        `Link check complete: ${plural(liveRedirects.length, "redirect")}, ${liveDeadLinks.length} unreachable/CORS.`,
       );
     } finally {
       if (generation === this.vaultGeneration()) this.checkingLinks.set(false);
@@ -1400,7 +1406,7 @@ export class VaultStoreService {
     }
     this.pushHistory();
     this.vaultData.set(next);
-    this.notify(`Applied ${count} batch edit(s).`);
+    this.notify(`Applied ${plural(count, "batch edit")}.`);
   }
 
   normalizeAll(): void {
@@ -1442,7 +1448,7 @@ export class VaultStoreService {
     const next = structuredClone(current);
     const updated = applyDomainMappingsToVault(next, this.domainMappings());
     this.vaultData.set(next);
-    this.notify(`Applied ${updated} domain mapping(s).`);
+    this.notify(`Applied ${plural(updated, "domain mapping")}.`);
   }
 
   importAegisFido(parsed: unknown): number {
@@ -1453,7 +1459,7 @@ export class VaultStoreService {
     const next = structuredClone(current);
     const updated = importAegisFidoKeys(next, parsed);
     this.vaultData.set(next);
-    this.notify(`Imported FIDO credentials (${updated} item(s) updated).`);
+    this.notify(`Imported FIDO credentials (${plural(updated, "item")} updated).`);
     return updated;
   }
 
@@ -1469,7 +1475,9 @@ export class VaultStoreService {
     }
     this.pushHistory();
     this.vaultData.set(next);
-    this.notify(`Added ${added} unmatched item(s) and applied the reviewed migration choices.`);
+    this.notify(
+      `Added ${plural(added, "unmatched item")} and applied the reviewed migration choices.`,
+    );
   }
 
   async exportVault(targetFormat?: VaultFormatId): Promise<void> {
@@ -1608,7 +1616,7 @@ export class VaultStoreService {
         );
         this.vaultData.set(next);
         this.notify(
-          `AI (${provider.meta.displayName}) categorized ${categorizedCount} item(s) (${createdFolders} new folder(s)).`,
+          `AI (${provider.meta.displayName}) categorized ${plural(categorizedCount, "item")} (${plural(createdFolders, "new folder")}).`,
         );
       },
     );
@@ -1659,10 +1667,10 @@ export class VaultStoreService {
         this.vaultData.set(next);
         this.aiOrganizeSummary.set(
           result.summary ??
-            `Categorized ${categorizedCount} item(s), created ${createdFolders} folder(s), renamed ${renamedCount} item(s).`,
+            `Categorized ${plural(categorizedCount, "item")}, created ${plural(createdFolders, "folder")}, renamed ${plural(renamedCount, "item")}.`,
         );
         this.notify(
-          `AI (${provider.meta.displayName}) organized ${categorizedCount} item(s), created ${createdFolders} folder(s), renamed ${renamedCount} item(s).`,
+          `AI (${provider.meta.displayName}) organized ${plural(categorizedCount, "item")}, created ${plural(createdFolders, "folder")}, renamed ${plural(renamedCount, "item")}.`,
         );
       },
     );
@@ -1701,7 +1709,7 @@ export class VaultStoreService {
         this.aiDuplicateGroups.set(resolved);
         this.notify(
           resolved.length > 0
-            ? `AI (${provider.meta.displayName}) detected ${resolved.length} semantic duplicate group(s).`
+            ? `AI (${provider.meta.displayName}) detected ${plural(resolved.length, "semantic duplicate group")}.`
             : `AI (${provider.meta.displayName}) found no additional semantic duplicates.`,
         );
       },
@@ -1782,7 +1790,7 @@ export class VaultStoreService {
         this.aiUriSuggestions.set(currentSuggestions);
         this.notify(
           currentSuggestions.length > 0
-            ? `AI (${provider.meta.displayName}) suggested ${currentSuggestions.length} missing login URI(s).`
+            ? `AI (${provider.meta.displayName}) suggested ${plural(currentSuggestions.length, "missing login URI")}.`
             : `AI (${provider.meta.displayName}) found no missing URIs to suggest.`,
         );
       },
@@ -1825,7 +1833,7 @@ export class VaultStoreService {
     if (updatedCount > 0) {
       this.pushHistory();
       this.vaultData.set(next);
-      this.notify(`Applied ${updatedCount} AI-suggested login URI(s).`);
+      this.notify(`Applied ${plural(updatedCount, "AI-suggested login URI")}.`);
     } else {
       this.notify("No URI suggestions could be applied because the items changed.");
     }
@@ -1855,7 +1863,7 @@ export class VaultStoreService {
         this.aiHygieneFindings.set(currentFindings);
         this.notify(
           currentFindings.length > 0
-            ? `AI (${provider.meta.displayName}) found ${currentFindings.length} hygiene insight(s).`
+            ? `AI (${provider.meta.displayName}) found ${plural(currentFindings.length, "hygiene insight")}.`
             : `AI (${provider.meta.displayName}) found no hygiene issues.`,
         );
       },
@@ -2004,7 +2012,7 @@ export class VaultStoreService {
       const suggestedCount = live.filter((f) => f.status === "suggested").length;
       const invalidCount = live.filter((f) => f.status === "invalid").length;
       this.notify(
-        `Mobile URI check: ${live.length} finding(s) (${suggestedCount} suggested, ${invalidCount} invalid).`,
+        `Mobile URI check: ${plural(live.length, "finding")} (${suggestedCount} suggested, ${invalidCount} invalid).`,
       );
     } finally {
       if (generation === this.vaultGeneration()) this.checkingMobileUris.set(false);
@@ -2178,7 +2186,7 @@ export class VaultStoreService {
       const label =
         this.vendorProviders().find((p) => p.id === providerId)?.displayName ?? providerId;
       this.notify(
-        `Pushed to ${label}: ${body.updated} updated, ${body.created} created, ${body.removed} moved to trash, ${body.newFolders} folder(s) created, ${body.updatedFolders} renamed, ${body.removedFolders} permanently deleted.`,
+        `Pushed to ${label}: ${body.updated} updated, ${body.created} created, ${body.removed} moved to trash, ${plural(body.newFolders, "folder")} created, ${body.updatedFolders} renamed, ${body.removedFolders} permanently deleted.`,
       );
     } catch (err) {
       this.notify(errorMessage(err));

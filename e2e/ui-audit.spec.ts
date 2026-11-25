@@ -75,9 +75,7 @@ test.describe("vaultlint Web UI audit", () => {
     await page.getByRole("button", { name: "Review", exact: true }).click();
     await page.getByRole("tab", { name: /Security & links/ }).click();
     await page.getByRole("button", { name: /Check Breaches/ }).click();
-    await expect(
-      page.getByText("HIBP check complete: 1 breached password(s) found."),
-    ).toBeVisible();
+    await expect(page.getByText("HIBP check complete: 1 breached password found.")).toBeVisible();
     expect(urls.length).toBeGreaterThan(0);
     for (const url of urls) expect(url).toMatch(/\/range\/[0-9A-F]{5}$/);
 

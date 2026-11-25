@@ -340,7 +340,15 @@
           >
             Run comparison again
           </button>
-          <button hlmBtn variant="ghost" size="sm" (click)="coverageOpen.set(false)">Close</button>
+          <button
+            hlmBtn
+            variant="outline"
+            size="sm"
+            aria-label="Close export format comparison"
+            (click)="coverageOpen.set(false)"
+          >
+            Close
+          </button>
         </div>
       </div>
       <div hlmCardContent class="space-y-3 pt-0">
