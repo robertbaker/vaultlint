@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.2.0](https://github.com/robertbaker/vaultlint/compare/v1.1.0...v1.2.0) (2026-11-25)
+
+### Features
+
+- **web:** unify session controls, mobile nav spacing, and AI card baselines ([3318ea6](https://github.com/robertbaker/vaultlint/commit/3318ea65c72e889d8435e41f068192e49fe0906b))
+
+### Bug Fixes
+
+- **web:** resolve select arrows, theme toggle icons, toast overlap, and paint lag ([24a1a10](https://github.com/robertbaker/vaultlint/commit/24a1a10c7f3327988e1fbd79ad380d85667e6745))
+
 ## [1.1.0](https://github.com/robertbaker/vaultlint/compare/v1.0.1...v1.1.0) (2026-11-25)
 
 ### Features

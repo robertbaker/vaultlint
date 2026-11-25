@@ -1,6 +1,6 @@
 {
   "name": "vaultlint",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "A local-first TypeScript CLI and Angular Web UI for auditing, deduplicating, batch-editing, and converting unencrypted password manager vault exports (Bitwarden, LastPass, 1Password, KeePass, Proton Pass, Dashlane, and more).",
   "keywords": [
     "aegis",
