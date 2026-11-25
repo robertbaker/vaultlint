@@ -97,12 +97,12 @@ const columnHelper = createColumnHelper<typeof features, ExplorerRow>();
             <app-search-box
               #searchBox
               class="w-full"
-              placeholder="Search names, usernames, or websites"
+              placeholder="Search names, users, sites"
               ariaLabel="Search vault items"
               [value]="searchQuery()"
               (search)="onSearchInput($event)"
             >
-              <kbd hlmKbd slot="hint">/</kbd>
+              <kbd hlmKbd slot="hint" class="hidden @[44rem]:inline-flex">/</kbd>
             </app-search-box>
           </div>
 
@@ -319,7 +319,7 @@ const columnHelper = createColumnHelper<typeof features, ExplorerRow>();
         <div role="list" aria-label="Vault items" class="space-y-2.5 @[44rem]:hidden">
           @for (row of table.getRowModel().rows; track row.original.key) {
             <article role="listitem" class="border-border bg-card rounded-lg border p-3 shadow-xs">
-              <div class="-mt-1.5 -ml-2 flex items-start gap-1">
+              <div class="-mt-1 -ml-2 flex items-center gap-1">
                 <label class="grid size-11 shrink-0 cursor-pointer place-items-center rounded-md">
                   <input
                     type="checkbox"
@@ -344,96 +344,93 @@ const columnHelper = createColumnHelper<typeof features, ExplorerRow>();
                 >
                   {{ row.original.isFavorite ? "★" : "☆" }}
                 </button>
-                <div class="min-w-0 flex-1 pt-2.5">
-                  <div class="flex flex-wrap items-center gap-1.5">
+                <div class="flex min-w-0 flex-1 flex-wrap items-center gap-1.5">
+                  <button
+                    type="button"
+                    class="max-w-full truncate text-left text-sm font-semibold hover:underline"
+                    (click)="editRow.emit(row.original)"
+                  >
+                    {{ row.original.name }}
+                  </button>
+                  <span hlmBadge variant="secondary" size="sm">
+                    {{ itemTypeLabel(row.original) }}
+                  </span>
+                  @if (row.original.folderName) {
+                    <span hlmBadge variant="outline" size="sm">{{ row.original.folderName }}</span>
+                  }
+                </div>
+              </div>
+
+              <div class="mt-1 space-y-1.5">
+                @if (row.original.username) {
+                  <div class="flex min-w-0 items-center gap-2 text-sm">
+                    <span class="text-muted-foreground shrink-0 text-xs">User</span>
+                    <span class="min-w-0 flex-1 truncate">{{ row.original.username }}</span>
                     <button
-                      type="button"
-                      class="truncate text-left text-sm font-semibold hover:underline"
-                      (click)="editRow.emit(row.original)"
+                      hlmBtn
+                      variant="ghost"
+                      size="icon-sm"
+                      (click)="onCopyField(row.original.key, 'username', row.original.username)"
+                      [attr.aria-label]="'Copy username for ' + row.original.name"
                     >
-                      {{ row.original.name }}
+                      <ng-icon
+                        [name]="
+                          copiedKey() === row.original.key + ':username'
+                            ? 'matCheckRound'
+                            : 'matContentCopyRound'
+                        "
+                        [class]="
+                          copiedKey() === row.original.key + ':username'
+                            ? 'text-success-readable size-3.5'
+                            : 'size-3.5'
+                        "
+                        aria-hidden="true"
+                      />
                     </button>
-                    <span hlmBadge variant="secondary" size="sm">
-                      {{ itemTypeLabel(row.original) }}
-                    </span>
-                    @if (row.original.folderName) {
-                      <span hlmBadge variant="outline" size="sm">{{
-                        row.original.folderName
-                      }}</span>
+                  </div>
+                }
+                @if (row.original.uris.length > 0) {
+                  <div class="flex items-center gap-1.5 text-xs">
+                    <p
+                      class="text-muted-foreground min-w-0 flex-1 truncate"
+                      [title]="row.original.uris.join(', ')"
+                    >
+                      {{ row.original.uris[0] }}
+                    </p>
+                    @if (extraUriCount(row.original.uris) > 0) {
+                      <span hlmBadge variant="outline" size="sm" class="shrink-0 tabular-nums">
+                        +{{ extraUriCount(row.original.uris) }}
+                      </span>
                     }
                   </div>
-                  @if (row.original.username) {
-                    <div class="mt-2 flex min-w-0 items-center gap-2 text-sm">
-                      <span class="text-muted-foreground shrink-0 text-xs">Username</span>
-                      <span class="min-w-0 flex-1 truncate">{{ row.original.username }}</span>
-                      <button
-                        hlmBtn
-                        variant="ghost"
-                        size="icon-sm"
-                        (click)="onCopyField(row.original.key, 'username', row.original.username)"
-                        [attr.aria-label]="'Copy username for ' + row.original.name"
-                      >
-                        <ng-icon
-                          [name]="
-                            copiedKey() === row.original.key + ':username'
-                              ? 'matCheckRound'
-                              : 'matContentCopyRound'
-                          "
-                          [class]="
-                            copiedKey() === row.original.key + ':username'
-                              ? 'text-success-readable size-3.5'
-                              : 'size-3.5'
-                          "
-                          aria-hidden="true"
-                        />
-                      </button>
-                    </div>
-                  }
-                  @if (row.original.uris.length > 0) {
-                    <div class="mt-1 flex items-center gap-1.5 text-xs">
-                      <p
-                        class="text-muted-foreground min-w-0 flex-1 truncate"
-                        [title]="row.original.uris.join(', ')"
-                      >
-                        {{ row.original.uris[0] }}
-                      </p>
-                      @if (extraUriCount(row.original.uris) > 0) {
-                        <span hlmBadge variant="outline" size="sm" class="shrink-0 tabular-nums">
-                          +{{ extraUriCount(row.original.uris) }}
-                        </span>
-                      }
-                    </div>
-                  }
-                  @if (row.original.password) {
-                    <div class="mt-2 flex items-center gap-2 text-xs">
-                      <span class="text-muted-foreground shrink-0">Password</span>
-                      <span class="min-w-0 flex-1 truncate font-mono">
-                        {{
-                          revealedIds().has(row.original.key)
-                            ? row.original.password
-                            : "••••••••••••"
-                        }}
-                      </span>
-                    </div>
-                  }
-                  <div class="mt-2">
-                    <ng-container
-                      [ngTemplateOutlet]="statusBadges"
-                      [ngTemplateOutletContext]="{ $implicit: row.original }"
-                    />
+                }
+                @if (row.original.password) {
+                  <div class="flex items-center gap-2 text-xs">
+                    <span class="text-muted-foreground shrink-0">Pass</span>
+                    <span class="min-w-0 flex-1 truncate font-mono">
+                      {{
+                        revealedIds().has(row.original.key) ? row.original.password : "••••••••••••"
+                      }}
+                    </span>
                   </div>
+                }
+                <div>
+                  <ng-container
+                    [ngTemplateOutlet]="statusBadges"
+                    [ngTemplateOutletContext]="{ $implicit: row.original }"
+                  />
                 </div>
               </div>
 
               <div
-                class="border-border mt-2.5 flex flex-wrap items-center justify-between gap-2 border-t pt-2.5"
+                class="border-border mt-2.5 flex items-center justify-between gap-1.5 border-t pt-2"
               >
-                <div class="flex flex-wrap items-center gap-1.5">
+                <div class="flex items-center gap-1">
                   @if (row.original.password) {
                     <button
                       hlmBtn
                       variant="ghost"
-                      size="sm"
+                      size="xs"
                       class="min-h-9"
                       (click)="toggleReveal.emit(row.original.key)"
                       [attr.aria-label]="
@@ -456,7 +453,7 @@ const columnHelper = createColumnHelper<typeof features, ExplorerRow>();
                     <button
                       hlmBtn
                       variant="ghost"
-                      size="sm"
+                      size="xs"
                       class="min-h-9"
                       (click)="onCopyField(row.original.key, 'password', row.original.password)"
                       [attr.aria-label]="'Copy password for ' + row.original.name"
@@ -482,23 +479,23 @@ const columnHelper = createColumnHelper<typeof features, ExplorerRow>();
                   <button
                     hlmBtn
                     variant="outline"
-                    size="sm"
+                    size="xs"
                     class="min-h-9"
                     (click)="editRow.emit(row.original)"
                     [attr.aria-label]="'Edit ' + row.original.name"
                   >
-                    <ng-icon name="matEditRound" class="size-4" aria-hidden="true" />
+                    <ng-icon name="matEditRound" class="size-3.5" aria-hidden="true" />
                     Edit
                   </button>
                   <button
                     hlmBtn
                     variant="danger"
-                    size="sm"
+                    size="xs"
                     class="min-h-9"
                     (click)="deleteRow.emit(row.original)"
                     [attr.aria-label]="'Delete ' + row.original.name"
                   >
-                    <ng-icon name="matDeleteRound" class="size-4" aria-hidden="true" />
+                    <ng-icon name="matDeleteRound" class="size-3.5" aria-hidden="true" />
                     Delete
                   </button>
                 </div>
@@ -756,7 +753,7 @@ const columnHelper = createColumnHelper<typeof features, ExplorerRow>();
     </ng-template>
 
     <ng-template #nameCell let-context>
-      <div class="flex flex-wrap items-center gap-1.5">
+      <div class="flex min-w-0 flex-nowrap items-center gap-1.5">
         <button
           type="button"
           class="touch-target inline-flex size-6 shrink-0 items-center justify-center rounded text-sm leading-none transition-colors hover:scale-110"
@@ -773,18 +770,20 @@ const columnHelper = createColumnHelper<typeof features, ExplorerRow>();
         </button>
         <button
           type="button"
-          class="min-h-6 max-w-52 truncate text-left hover:underline"
+          class="min-h-6 max-w-44 truncate text-left hover:underline"
           (click)="editRow.emit(context.row.original)"
         >
           <span class="font-medium">{{ context.row.original.name }}</span>
         </button>
         @if (context.row.original.itemType !== 1 || context.row.original.isMobileApp) {
-          <span hlmBadge variant="secondary" size="sm">
+          <span hlmBadge variant="secondary" size="sm" class="shrink-0">
             {{ itemTypeLabel(context.row.original) }}
           </span>
         }
         @if (context.row.original.folderName) {
-          <span hlmBadge variant="outline" size="sm">{{ context.row.original.folderName }}</span>
+          <span hlmBadge variant="outline" size="sm" class="max-w-28 shrink-0 truncate">{{
+            context.row.original.folderName
+          }}</span>
         }
       </div>
     </ng-template>

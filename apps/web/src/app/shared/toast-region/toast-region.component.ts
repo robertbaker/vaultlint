@@ -13,7 +13,7 @@ import type { ToastItem } from "../../core/vault.models";
       role="region"
       aria-label="Notifications"
       aria-live="polite"
-      class="pointer-events-none fixed right-3 bottom-[calc(4.75rem+env(safe-area-inset-bottom,0px))] left-3 z-50 flex flex-col items-end gap-2 md:right-4 md:bottom-4 md:left-auto"
+      class="pointer-events-none fixed right-3 bottom-[calc(4.75rem+env(safe-area-inset-bottom,0px))] left-3 z-50 flex flex-col items-end gap-2 md:top-18 md:right-4 md:bottom-auto md:left-auto"
       (pointerenter)="setPointerInside(true)"
       (pointerleave)="setPointerInside(false)"
       (focusin)="setFocusInside(true)"

@@ -95,7 +95,7 @@ export interface BatchEditRequest {
               <button
                 hlmBtn
                 type="button"
-                variant="ghost"
+                variant="outline"
                 size="xs"
                 (click)="applyPreset('uri', '^http://', 'https://')"
               >
@@ -104,7 +104,7 @@ export interface BatchEditRequest {
               <button
                 hlmBtn
                 type="button"
-                variant="ghost"
+                variant="outline"
                 size="xs"
                 (click)="applyPreset('uri', '^(https?://)www\\\\.', '$1')"
               >
@@ -113,7 +113,7 @@ export interface BatchEditRequest {
               <button
                 hlmBtn
                 type="button"
-                variant="ghost"
+                variant="outline"
                 size="xs"
                 (click)="applyPreset('uri', '\\\\?.*$', '')"
               >
@@ -125,7 +125,14 @@ export interface BatchEditRequest {
               <button hlmBtn type="button" variant="outline" size="sm" (click)="onPreview()">
                 Preview Matches
               </button>
-              <button hlmBtn type="button" variant="default" size="sm" (click)="onApply()">
+              <button
+                hlmBtn
+                type="button"
+                [variant]="pattern().trim() ? 'default' : 'outline'"
+                size="sm"
+                [disabled]="!pattern().trim()"
+                (click)="onApply()"
+              >
                 Apply Batch Edit
               </button>
               <button
@@ -184,8 +191,8 @@ export interface BatchEditRequest {
             <div class="flex flex-wrap gap-2">
               <input
                 hlmInput
-                class="min-w-36 flex-1"
-                placeholder="From host (mail.google.com)"
+                class="min-w-40 flex-1"
+                placeholder="From (mail.google.com)"
                 [value]="mapFrom()"
                 (input)="mapFrom.set($any($event.target).value)"
                 aria-label="Source domain"
@@ -193,7 +200,7 @@ export interface BatchEditRequest {
               <input
                 hlmInput
                 class="min-w-36 flex-1"
-                placeholder="To host (google.com)"
+                placeholder="To (google.com)"
                 [value]="mapTo()"
                 (input)="mapTo.set($any($event.target).value)"
                 aria-label="Target domain"
@@ -221,8 +228,9 @@ export interface BatchEditRequest {
                     <button
                       hlmBtn
                       type="button"
-                      variant="ghost"
+                      variant="outline"
                       size="xs"
+                      class="hover:text-destructive-readable"
                       (click)="removeMapping.emit(entry[0])"
                     >
                       Remove

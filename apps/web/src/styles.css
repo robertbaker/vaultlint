@@ -4,6 +4,7 @@
 @import "tw-animate-css";
 @custom-variant data-open (&:where([data-state="open"], [data-open]));
 @custom-variant data-closed (&:where([data-state="closed"], [data-closed]));
+@custom-variant data-active (&:where([data-state="active"], [data-active="true"], [data-active=""], [aria-selected="true"]));
 /*
  * `dark:` utilities follow the app's theme choice (ThemeService sets data-theme and .dark on the
  * root), not just the OS preference; "auto" (no data-theme) still follows the OS.
@@ -295,7 +296,7 @@
 }
 
 progress.progress-ring {
-  --size: 3.75rem;
+  --size: 4.15rem;
   --thickness: 6px;
   --track-color: var(--muted);
   --fill-color: var(--primary);

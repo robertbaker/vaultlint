@@ -33,7 +33,8 @@ import type {
             <h3 hlmCardTitle>Password Health &amp; Generator</h3>
             <p hlmCardDescription>
               @if (chartBreakdown(); as chart) {
-                Local breakdown across {{ chart.totalItems }} vault item(s).
+                Local breakdown across {{ chart.totalItems }} vault
+                {{ chart.totalItems === 1 ? "item" : "items" }}.
               } @else {
                 Local password strength summary.
               }
@@ -392,7 +393,7 @@ import type {
                       <button
                         hlmBtn
                         type="button"
-                        variant="ghost"
+                        variant="outline"
                         size="sm"
                         class="min-h-9"
                         (click)="editItem.emit(weak.index)"
@@ -412,7 +413,10 @@ import type {
       @if (findingFilter() === "all" || findingFilter() === "reused") {
         <section hlmCard size="sm">
           <div hlmCardHeader>
-            <h3 hlmCardTitle>Reused Passwords ({{ reusedGroups().length }} group(s))</h3>
+            <h3 hlmCardTitle>
+              Reused Passwords ({{ reusedGroups().length }}
+              {{ reusedGroups().length === 1 ? "group" : "groups" }})
+            </h3>
             <p hlmCardDescription>
               Logins sharing the same password should be rotated to distinct values.
             </p>

@@ -47,7 +47,7 @@ describe("SecurityPanelComponent", () => {
     expect(root.textContent).toContain("too short");
     expect(root.textContent).toContain("missing digit");
     expect(root.textContent).toContain("Weak Passwords (1)");
-    expect(root.textContent).toContain("Reused Passwords (1 group(s))");
+    expect(root.textContent).toContain("Reused Passwords (1 group)");
     expect(root.textContent).toContain("Invalid / Malformed URIs (1)");
 
     const clickFilter = (prefix: string) => {
@@ -68,7 +68,7 @@ describe("SecurityPanelComponent", () => {
     const reusedBtn = clickFilter("Reused (1)");
     expect(reusedBtn.getAttribute("aria-pressed")).toBe("true");
     expect(root.textContent).not.toContain("Weak Passwords (1)");
-    expect(root.textContent).toContain("Reused Passwords (1 group(s))");
+    expect(root.textContent).toContain("Reused Passwords (1 group)");
 
     const urisBtn = clickFilter("Invalid URIs (1)");
     expect(urisBtn.getAttribute("aria-pressed")).toBe("true");

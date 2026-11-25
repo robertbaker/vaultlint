@@ -14,6 +14,7 @@ import { NgIcon } from "@ng-icons/core";
 import { HlmBadgeImports } from "@spartan-ng/helm/badge";
 import { HlmButtonImports } from "@spartan-ng/helm/button";
 import { HlmButtonGroupImports } from "@spartan-ng/helm/button-group";
+import { HlmNativeSelectImports } from "@spartan-ng/helm/native-select";
 import { BRAND_LINKS } from "@vaultlint/brand";
 import type { VaultFormatId } from "@vaultlint/vault-formats";
 import { VAULT_FORMATS } from "@vaultlint/vault-formats/metadata";
@@ -22,7 +23,13 @@ import type { ThemeMode } from "../../core/vault.models";
 
 @Component({
   selector: "app-vault-header",
-  imports: [NgIcon, ...HlmBadgeImports, ...HlmButtonImports, ...HlmButtonGroupImports],
+  imports: [
+    NgIcon,
+    ...HlmBadgeImports,
+    ...HlmButtonImports,
+    ...HlmButtonGroupImports,
+    ...HlmNativeSelectImports,
+  ],
   template: `
     <header
       #headerEl
@@ -208,16 +215,18 @@ import type { ThemeMode } from "../../core/vault.models";
               </button>
             </hlm-button-group>
 
-            <select
-              class="border-input bg-background/70 text-foreground focus-visible:ring-ring/50 hidden h-7 max-w-44 min-w-0 rounded-[min(var(--radius-md),10px)] border px-2 py-0.5 text-xs outline-none focus-visible:ring-3 md:inline-block"
+            <hlm-native-select
+              size="sm"
+              class="hidden max-w-48 min-w-0 md:inline-block"
+              selectClass="bg-background/70 text-xs"
               [value]="exportFormat()"
-              (change)="onExportFormatChange($event)"
+              (valueChange)="onExportFormatSelected($event)"
               aria-label="Export format"
             >
               @for (fmt of formats; track fmt.id) {
-                <option [value]="fmt.id">{{ fmt.name }}</option>
+                <option hlmNativeSelectOption [value]="fmt.id">{{ fmt.name }}</option>
               }
-            </select>
+            </hlm-native-select>
 
             <button
               #exportVaultButton
@@ -229,6 +238,9 @@ import type { ThemeMode } from "../../core/vault.models";
             >
               <ng-icon name="matDownloadRound" class="size-4" aria-hidden="true" />
               <span class="sr-only sm:not-sr-only">Export vault</span>
+              <span class="text-[11px] font-semibold opacity-90 md:hidden" aria-hidden="true">
+                {{ exportFormatShortLabel() }}
+              </span>
             </button>
 
             @if (pushLabel()) {
@@ -468,6 +480,12 @@ export class VaultHeaderComponent {
   readonly vendorBusy = input<boolean>(false);
 
   protected readonly formats = VAULT_FORMATS;
+  protected readonly exportFormatShortLabel = computed(() => {
+    const fmt = this.formats.find((f) => f.id === this.exportFormat());
+    if (!fmt) return this.exportFormat().toUpperCase();
+    const ext = fmt.extensions[0];
+    return ext ? ext.replace(/^\./, "").toUpperCase() : fmt.name;
+  });
 
   readonly undo = output<void>();
   readonly redo = output<void>();

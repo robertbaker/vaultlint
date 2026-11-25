@@ -40,9 +40,11 @@ describe("DuplicatesPanelComponent", () => {
     const fixture = TestBed.createComponent(DuplicatesPanelComponent);
     fixture.componentRef.setInput("groups", [group]);
     fixture.detectChanges();
-    const text = (fixture.nativeElement as HTMLElement).textContent ?? "";
-    expect(text).toContain("2020-01-01T00:00:00.000Z");
-    expect(text).toContain("2024-01-01T00:00:00.000Z");
+    const root = fixture.nativeElement as HTMLElement;
+    const text = root.textContent ?? "";
+    const datetimes = [...root.querySelectorAll("time")].map((el) => el.getAttribute("datetime"));
+    expect(datetimes).toContain("2020-01-01T00:00:00.000Z");
+    expect(datetimes).toContain("2024-01-01T00:00:00.000Z");
     expect(text.match(/no date/g)).toHaveLength(1);
   });
 });

@@ -121,7 +121,7 @@ const SEVERITY_RANK: Record<ActiveLintSeverity, number> = {
             <button
               hlmBtn
               type="button"
-              variant="default"
+              [variant]="(lintResult()?.counts?.fixableSafe ?? 0) > 0 ? 'default' : 'outline'"
               size="sm"
               [disabled]="(lintResult()?.counts?.fixableSafe ?? 0) === 0"
               (click)="autofixSafe.emit()"
@@ -131,7 +131,12 @@ const SEVERITY_RANK: Record<ActiveLintSeverity, number> = {
             <button
               hlmBtn
               type="button"
-              variant="outline"
+              [variant]="
+                (lintResult()?.counts?.fixableSafe ?? 0) === 0 &&
+                (lintResult()?.counts?.fixableUnsafe ?? 0) > 0
+                  ? 'default'
+                  : 'outline'
+              "
               size="sm"
               [disabled]="
                 (lintResult()?.counts?.fixableSafe ?? 0) +
