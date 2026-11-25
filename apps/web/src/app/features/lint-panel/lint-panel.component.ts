@@ -381,13 +381,18 @@ const SEVERITY_RANK: Record<ActiveLintSeverity, number> = {
           <div class="space-y-2.5">
             @for (group of groupedFindings(); track group.ruleId; let i = $index) {
               <details
-                class="animated-details border-border bg-card rounded-lg border"
+                class="animated-details group border-border bg-card rounded-lg border"
                 [open]="i < 3"
               >
                 <summary
                   class="hover:bg-muted/40 flex cursor-pointer list-none flex-wrap items-center justify-between gap-2 px-3.5 py-2.5 [&::-webkit-details-marker]:hidden"
                 >
                   <div class="flex min-w-0 flex-1 flex-wrap items-center gap-2">
+                    <ng-icon
+                      name="matKeyboardArrowDownRound"
+                      class="text-muted-foreground size-4 shrink-0 -rotate-90 transition-transform duration-150 group-open:rotate-0"
+                      aria-hidden="true"
+                    />
                     <span
                       hlmBadge
                       [variant]="
@@ -439,7 +444,7 @@ const SEVERITY_RANK: Record<ActiveLintSeverity, number> = {
                       <button
                         hlmBtn
                         type="button"
-                        variant="ghost"
+                        variant="outline"
                         size="sm"
                         class="min-h-9"
                         (click)="editItem.emit(finding.itemIndex)"
@@ -498,7 +503,7 @@ const SEVERITY_RANK: Record<ActiveLintSeverity, number> = {
                     <button
                       hlmBtn
                       type="button"
-                      variant="ghost"
+                      variant="outline"
                       size="sm"
                       class="min-h-9"
                       (click)="editItem.emit(finding.itemIndex)"

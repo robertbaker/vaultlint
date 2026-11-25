@@ -195,19 +195,47 @@ export interface EditItemResult {
               </div>
             </div>
             @if (password()) {
-              <div class="flex flex-wrap items-center gap-1.5 pt-1 text-xs">
-                <span
-                  hlmBadge
-                  [variant]="passwordStrength().strong ? 'success' : 'warning'"
-                  size="sm"
-                >
-                  {{ passwordStrength().strong ? "Strong" : "Weak" }}
-                </span>
-                @if (!passwordStrength().strong) {
-                  <span class="text-muted-foreground">
-                    Missing: {{ passwordStrength().missing.join(", ") }}
+              <div class="space-y-1.5 pt-1 text-xs">
+                <div class="grid grid-cols-3 gap-1" aria-hidden="true">
+                  <div
+                    class="h-1 rounded-full transition-colors"
+                    [class]="
+                      passwordStrength().score >= 1
+                        ? passwordStrength().strong
+                          ? 'bg-success'
+                          : 'bg-warning'
+                        : 'bg-muted'
+                    "
+                  ></div>
+                  <div
+                    class="h-1 rounded-full transition-colors"
+                    [class]="
+                      passwordStrength().score >= 2
+                        ? passwordStrength().strong
+                          ? 'bg-success'
+                          : 'bg-warning'
+                        : 'bg-muted'
+                    "
+                  ></div>
+                  <div
+                    class="h-1 rounded-full transition-colors"
+                    [class]="passwordStrength().strong ? 'bg-success' : 'bg-muted'"
+                  ></div>
+                </div>
+                <div class="flex flex-wrap items-center gap-1.5">
+                  <span
+                    hlmBadge
+                    [variant]="passwordStrength().strong ? 'success' : 'warning'"
+                    size="sm"
+                  >
+                    {{ passwordStrength().strong ? "Strong" : "Weak" }}
                   </span>
-                }
+                  @if (!passwordStrength().strong) {
+                    <span class="text-muted-foreground">
+                      Missing: {{ passwordStrength().missing.join(", ") }}
+                    </span>
+                  }
+                </div>
               </div>
             }
           </div>
@@ -288,7 +316,7 @@ export class EditItemDialogComponent {
     if (pw.length < 12) missing.push("12+ chars");
     if (!/\d/.test(pw)) missing.push("digit");
     if (!/[!@#$%^&*(),.?":{}|<>_\-+=[\]\\/;']/.test(pw)) missing.push("special char");
-    return { strong: missing.length === 0, missing };
+    return { strong: missing.length === 0, score: 3 - missing.length, missing };
   });
 
   openCreate(): void {

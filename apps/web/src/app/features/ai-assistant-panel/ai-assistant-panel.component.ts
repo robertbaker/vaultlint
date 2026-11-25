@@ -181,7 +181,7 @@ import type { AiResolvedDuplicateGroup } from "../../core/vault.models";
             <div class="flex flex-wrap gap-2">
               <button
                 hlmBtn
-                variant="default"
+                variant="outline"
                 size="sm"
                 [disabled]="aiRunning()"
                 (click)="suggestUrisAi.emit(buildConfig())"
@@ -226,7 +226,7 @@ import type { AiResolvedDuplicateGroup } from "../../core/vault.models";
           </div>
           <button
             hlmBtn
-            variant="default"
+            variant="outline"
             size="sm"
             [disabled]="aiRunning()"
             (click)="detectDuplicatesAi.emit(buildConfig())"
@@ -303,7 +303,7 @@ import type { AiResolvedDuplicateGroup } from "../../core/vault.models";
           </div>
           <button
             hlmBtn
-            variant="default"
+            variant="outline"
             size="sm"
             [disabled]="aiRunning()"
             (click)="analyzeHygieneAi.emit(buildConfig())"
