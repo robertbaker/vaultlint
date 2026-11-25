@@ -328,7 +328,8 @@ import type { AiResolvedDuplicateGroup } from "../../core/vault.models";
                     <span class="text-sm font-semibold">{{ finding.title }}</span>
                     @if (finding.itemIds.length > 0) {
                       <span class="text-muted-foreground">
-                        ({{ finding.itemIds.length }} item(s))
+                        ({{ finding.itemIds.length }}
+                        {{ finding.itemIds.length === 1 ? "item" : "items" }})
                       </span>
                     }
                   </div>

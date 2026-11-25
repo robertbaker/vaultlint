@@ -499,7 +499,8 @@ import type {
                     <div class="min-w-0 flex-1 space-y-0.5">
                       <div class="text-sm font-medium">{{ entry.item.name || "Unnamed" }}</div>
                       <p class="text-muted-foreground text-xs break-all">
-                        Invalid URI(s): {{ entry.invalidUris.join(", ") }}
+                        {{ entry.invalidUris.length === 1 ? "Invalid URI:" : "Invalid URIs:" }}
+                        {{ entry.invalidUris.join(", ") }}
                       </p>
                     </div>
                     <button

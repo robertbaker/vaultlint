@@ -223,7 +223,8 @@ import { parseErrorMessage } from "../../core/parse-error";
                 [disabled]="!hasChanges(result)"
                 (click)="applyMigration()"
               >
-                Apply migration ({{ selectedAdditions(result) }} new item(s))
+                Apply migration ({{ selectedAdditions(result) }}
+                {{ selectedAdditions(result) === 1 ? "new item" : "new items" }})
               </button>
               <button
                 hlmBtn
@@ -231,6 +232,7 @@ import { parseErrorMessage } from "../../core/parse-error";
                 variant="outline"
                 (click)="downloadDecisionReport(result)"
               >
+                <ng-icon name="matDownloadRound" class="size-4" aria-hidden="true" />
                 Download decision report
               </button>
             </div>

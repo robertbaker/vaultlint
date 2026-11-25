@@ -140,7 +140,7 @@ describe("VaultExplorerComponent table row models", () => {
     all.checked = true;
     all.dispatchEvent(new Event("change"));
     fixture.detectChanges();
-    expect(root.textContent).toContain("10 item(s) selected");
+    expect(root.textContent).toContain("10 items selected");
   });
 
   it("uses a search landmark, compacts multi-URIs, and shows inline copy feedback without disabling", () => {

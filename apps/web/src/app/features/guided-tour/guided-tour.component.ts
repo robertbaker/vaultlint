@@ -82,12 +82,12 @@ export type GuidedTourAction = "upload" | "export" | VaultTabId;
           </p>
         </section>
 
-        <footer class="guided-tour-footer">
+        <div class="guided-tour-footer">
           <div class="guided-tour-nav">
             <button
               hlmBtn
               type="button"
-              variant="ghost"
+              variant="outline"
               [disabled]="step() === 0"
               (click)="previous()"
             >
@@ -106,7 +106,7 @@ export type GuidedTourAction = "upload" | "export" | VaultTabId;
           >
             {{ primaryLabel() }}
           </button>
-        </footer>
+        </div>
       </div>
     </dialog>
   `,
