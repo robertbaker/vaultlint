@@ -197,13 +197,18 @@ interface CachedChangelog {
               @for (release of shownReleases(); track release.version; let i = $index) {
                 <details
                   [id]="'cl-release-' + i"
-                  class="border-border bg-card rounded-lg border"
+                  class="animated-details group border-border bg-card rounded-lg border"
                   [open]="isFiltering() || i < openByDefault"
                 >
                   <summary
-                    class="hover:bg-muted/40 flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3"
+                    class="hover:bg-muted/40 flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 [&::-webkit-details-marker]:hidden"
                   >
                     <div class="flex flex-wrap items-center gap-2">
+                      <ng-icon
+                        name="matKeyboardArrowDownRound"
+                        class="text-muted-foreground size-4 shrink-0 -rotate-90 transition-transform duration-150 group-open:rotate-0"
+                        aria-hidden="true"
+                      />
                       <span class="text-sm font-semibold">v{{ release.version }}</span>
                       @if (release.date) {
                         <time class="text-muted-foreground text-xs" [attr.datetime]="release.date">

@@ -99,6 +99,10 @@ function isTextEntryTarget(target: HTMLElement): boolean {
   return !NON_TEXT_INPUT_TYPES.has((target as HTMLInputElement).type);
 }
 
+function plural(count: number, singular: string, pluralForm = `${singular}s`): string {
+  return `${count} ${count === 1 ? singular : pluralForm}`;
+}
+
 interface IndexedExplorerRow extends ExplorerRow {
   searchText: string;
 }
@@ -765,7 +769,7 @@ export class App {
     this.pendingDeleteItems = this.capturePendingDeleteItems(indices);
     this.confirmData.set({
       title: "Delete Selected Items?",
-      copy: `Delete ${indices.length} selected item(s)? You can undo this later with Undo.`,
+      copy: `Delete ${plural(indices.length, "selected item")}? You can undo this later with Undo.`,
       confirmLabel: "Delete",
       cancelLabel: "Cancel",
       confirmColor: "destructive",
@@ -792,7 +796,7 @@ export class App {
     const extra = plan.lines.length > 8 ? `\n...and ${plan.lines.length - 8} more.` : "";
     this.confirmData.set({
       title: this.store.activeVendorPushLabel() || "Push Changes to CLI?",
-      copy: `${plan.updates} update(s), ${plan.creates} create(s), ${plan.removes} move(s) to trash, ${plan.newFolders} new folder(s), ${plan.updatedFolders} folder rename(s), ${plan.removedFolders} permanent folder deletion(s).\n\n${preview}${extra}`,
+      copy: `${plural(plan.updates, "update")}, ${plural(plan.creates, "create")}, ${plural(plan.removes, "move")} to trash, ${plural(plan.newFolders, "new folder")}, ${plural(plan.updatedFolders, "folder rename")}, ${plural(plan.removedFolders, "permanent folder deletion")}.\n\n${preview}${extra}`,
       confirmLabel: "Push Changes",
       cancelLabel: "Cancel",
     });
@@ -849,6 +853,6 @@ export class App {
 
   protected onAegisLoaded(parsed: unknown): void {
     const count = this.store.importAegisFido(parsed);
-    this.aegisPanel()?.setStatus(`Updated FIDO2 keys on ${count} vault item(s).`);
+    this.aegisPanel()?.setStatus(`Updated FIDO2 keys on ${plural(count, "vault item")}.`);
   }
 }

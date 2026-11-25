@@ -929,7 +929,7 @@ export class VaultStoreService {
     const next = structuredClone(current);
     next.items = next.items.filter((_, idx) => !removeSet.has(idx));
     this.vaultData.set(next);
-    this.notify(`Deleted ${removeSet.size} selected item(s).`);
+    this.notify(`Deleted ${removeSet.size} selected ${removeSet.size === 1 ? "item" : "items"}.`);
   }
 
   regeneratePasswordsForIndices(indices: number[]): void {
@@ -956,7 +956,7 @@ export class VaultStoreService {
       count++;
     }
     this.vaultData.set(next);
-    this.notify(`Regenerated passwords for ${count} selected item(s).`);
+    this.notify(`Regenerated passwords for ${count} selected ${count === 1 ? "item" : "items"}.`);
   }
 
   toggleFavorite(index: number): void {
@@ -984,7 +984,9 @@ export class VaultStoreService {
     }
     const folderLabel = folderId ? this.folderNameById().get(folderId) || "folder" : "No folder";
     this.vaultData.set(next);
-    this.notify(`Moved ${indices.length} item(s) to "${folderLabel}".`);
+    this.notify(
+      `Moved ${indices.length} ${indices.length === 1 ? "item" : "items"} to "${folderLabel}".`,
+    );
   }
 
   exportAuditReport(): void {
@@ -1090,7 +1092,7 @@ export class VaultStoreService {
     mergeAllDuplicateGroups(next);
     const mergedCount = before - next.items.length;
     this.vaultData.set(next);
-    this.notify(`Merged ${mergedCount} duplicate entry(s).`);
+    this.notify(`Merged ${mergedCount} duplicate ${mergedCount === 1 ? "entry" : "entries"}.`);
   }
 
   regeneratePassword(index: number): void {
@@ -1113,7 +1115,7 @@ export class VaultStoreService {
     const next = structuredClone(current);
     const count = regenerateWeakPasswordsInVault(next, this.passwordLength());
     this.vaultData.set(next);
-    this.notify(`Regenerated ${count} weak password(s).`);
+    this.notify(`Regenerated ${count} weak ${count === 1 ? "password" : "passwords"}.`);
   }
 
   setLintRuleset(preset: LintPresetName): void {
