@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/robertbaker/vaultlint/compare/v1.3.0...v1.4.0) (2026-11-26)
+
+### Features
+
+- **web:** add network aria-busy, activity match count, and sort hints ([4c4fe94](https://github.com/robertbaker/vaultlint/commit/4c4fe94b5a6883f694d8e048187d8cb2e6093aff))
+- **web:** polish lint filter a11y, explorer empty/bulk states, and undo shortcuts ([56090ec](https://github.com/robertbaker/vaultlint/commit/56090ec46a6d2e412c4189746dd92e3571471454))
+
 ## [1.3.0](https://github.com/robertbaker/vaultlint/compare/v1.2.0...v1.3.0) (2026-11-25)
 
 ### Features
