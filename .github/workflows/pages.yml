@@ -1,46 +1,86 @@
 name: Deploy Site & Web UI to GitHub Pages
 
+# Deploys the website after the Release CLI workflow finishes successfully on main. That workflow
+# runs only after a green CI run and succeeds when there is nothing to release, so every validated
+# main commit is considered, including the release commit (version bump, changelog).
+# The site is rebuilt only when web files differ from the live deployment, whose commit is
+# published as deploy-sha.txt. A manual run always deploys.
+
 on:
-  push:
+  workflow_run:
+    workflows: [Release CLI]
+    types: [completed]
     branches: [main]
-    paths:
-      - 'apps/site/**'
-      - 'apps/web/**'
-      - 'packages/**'
-      - 'package.json'
-      - 'bun.lock'
-      - 'CHANGELOG.md'
-      - '.github/workflows/pages.yml'
-      - '.github/actions/setup/action.yml'
   workflow_dispatch:
 
 concurrency:
-  group: pages-${{ github.ref }}
+  group: pages
   cancel-in-progress: false
 
 jobs:
   build:
     name: Build Site & Web UI
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
+    outputs:
+      deploy: ${{ steps.gate.outputs.deploy }}
     steps:
+      # Latest main, so the release commit is included.
       - uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Check for web changes
+        id: gate
+        env:
+          SHA_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/deploy-sha.txt
+        run: |
+          web_paths=(
+            apps/site
+            apps/web
+            packages
+            package.json
+            bun.lock
+            CHANGELOG.md
+            .github/workflows/pages.yml
+            .github/actions/setup
+          )
+          # Deploy unless the live commit is known and has the same web files.
+          deployed=$(curl -fsSL "$SHA_URL?run=${{ github.run_id }}" || true)
+          if [ "${{ github.event_name }}" != "workflow_dispatch" ] \
+            && [[ "$deployed" =~ ^[0-9a-f]{40}$ ]] \
+            && git diff --quiet "$deployed" HEAD -- "${web_paths[@]}"; then
+            echo "No web changes since $deployed; skipping deploy."
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: ./.github/actions/setup
+        if: steps.gate.outputs.deploy == 'true'
       - name: Build Astro Starlight site for GitHub Pages
+        if: steps.gate.outputs.deploy == 'true'
         env:
           ASTRO_SITE: https://${{ github.repository_owner }}.github.io
           ASTRO_BASE: /${{ github.event.repository.name }}
         run: bun --filter site build
       - name: Build Angular Web UI for GitHub Pages
+        if: steps.gate.outputs.deploy == 'true'
         run: bun --filter web build --base-href /${{ github.event.repository.name }}/app/
       - name: Assemble combined Pages artifact
+        if: steps.gate.outputs.deploy == 'true'
         run: |
           rm -rf _site
           mkdir -p _site/app
           cp -r apps/site/dist/. _site/
           cp -r apps/web/dist/web/browser/. _site/app/
+          git rev-parse HEAD > _site/deploy-sha.txt
       - name: Upload Pages artifact
+        if: steps.gate.outputs.deploy == 'true'
         uses: actions/upload-pages-artifact@v5
         with:
           path: _site
@@ -48,6 +88,7 @@ jobs:
   deploy:
     name: Deploy to GitHub Pages
     needs: build
+    if: needs.build.outputs.deploy == 'true'
     runs-on: ubuntu-latest
     permissions:
       actions: read

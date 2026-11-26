@@ -73,6 +73,16 @@ jobs:
               - '.github/actions/**'
             e2e_specs:
               - 'e2e/**/*.spec.ts'
+            site:
+              - 'apps/site/**'
+              - 'packages/brand/**'
+              - 'e2e-site/**'
+              - 'playwright.site.config.ts'
+              - 'CHANGELOG.md'
+              - 'package.json'
+              - 'bun.lock'
+              - '.github/workflows/ci.yml'
+              - '.github/actions/**'
 
   # Independent checks run in parallel; the `ci` job remains the single required status.
   static:
@@ -120,10 +130,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
-      - if: needs.changes.outputs.cli == 'true' || needs.changes.outputs.web == 'true'
-        run: bun run test:packages
-      - if: needs.changes.outputs.cli == 'true' || needs.changes.outputs.web == 'true'
-        run: bun run test:packages
+      - run: bun run test:packages
       - if: needs.changes.outputs.cli == 'true'
         run: bun run test:cli
       - if: needs.changes.outputs.web == 'true'

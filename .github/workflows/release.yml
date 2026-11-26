@@ -1,9 +1,12 @@
-name: Release
+name: Release CLI
 
 # Releases the `vaultlint` npm package straight from main:
-#   After CI passes on main with releasable changes, release-it bumps package.json,
+#   After CI passes on main with releasable CLI changes, release-it bumps package.json,
 #   updates CHANGELOG.md and bun.lock, commits to main, tags, creates the GitHub release,
 #   and publishes to npm.
+# CLI changes are those under apps/cli, the shared packages bundled into it, and the publish
+# script. Web-only changes never release on their own; they deploy to the website (pages.yml) and
+# ship in the package's bundled Web UI, and its changelog, with the next CLI release.
 # Pushing to the protected main branch needs a token that may bypass branch protection, so the
 # workflow uses the RELEASE_TOKEN secret instead of GITHUB_TOKEN:
 #   - Fine-grained PAT (or a GitHub App token) with Contents: read/write on this repository.
@@ -62,11 +65,23 @@ jobs:
           last=$(git describe --tags --abbrev=0 --match 'v[0-9]*' 2>/dev/null || true)
           range=${last:+$last..HEAD}
           echo "Last release tag: ${last:-none}"
-          releasable=$(git log --format=%s $range -- ':!*.md' \
+          cli_paths=(
+            apps/cli
+            packages/ai
+            packages/brand/src
+            packages/vault-formats
+            packages/vault-ops
+            packages/vault-schema
+            scripts/build-publish.ts
+            ':(exclude)*.md'
+            ':(exclude)apps/cli/tests'
+            ':(exclude)packages/*/tests'
+          )
+          releasable=$(git log --format=%s $range -- "${cli_paths[@]}" \
             | grep -Ev '^(docs|style)(\(.+\))?!?:' \
             | grep -Ev '^chore: release' || true)
           if [ -z "$releasable" ] && [ "${{ github.event_name }}" != "workflow_dispatch" ]; then
-            echo "Only docs/style changes since the last release; skipping."
+            echo "No releasable CLI changes since the last release; skipping."
             echo "release=false" >> "$GITHUB_OUTPUT"
           else
             printf 'Releasable commits:\n%s\n' "$releasable"
