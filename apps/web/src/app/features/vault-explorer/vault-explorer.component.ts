@@ -552,7 +552,7 @@ const columnHelper = createColumnHelper<typeof features, ExplorerRow>();
                         @if (header.column.getCanSort()) {
                           <button
                             type="button"
-                            class="hover:text-foreground inline-flex min-h-6 items-center gap-1 font-medium"
+                            class="group hover:text-foreground inline-flex min-h-6 items-center gap-1 font-medium"
                             (click)="header.column.getToggleSortingHandler()?.($event)"
                           >
                             <ng-container *flexRenderHeader="header; let text">
@@ -562,6 +562,13 @@ const columnHelper = createColumnHelper<typeof features, ExplorerRow>();
                               <span aria-hidden="true">↑</span>
                             } @else if (header.column.getIsSorted() === "desc") {
                               <span aria-hidden="true">↓</span>
+                            } @else {
+                              <span
+                                class="text-muted-foreground opacity-0 transition-opacity group-hover:opacity-60 group-focus-visible:opacity-60"
+                                aria-hidden="true"
+                              >
+                                ↕
+                              </span>
                             }
                           </button>
                         } @else {

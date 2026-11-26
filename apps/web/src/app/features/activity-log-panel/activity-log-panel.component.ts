@@ -50,15 +50,20 @@ import type { AuditLogEntry } from "../../core/vault.models";
       </div>
 
       @if (entries().length >= 5) {
-        <search aria-label="Filter activity log" class="block">
+        <search aria-label="Filter activity log" class="flex flex-wrap items-center gap-3">
           <app-search-box
             compact
-            class="max-w-sm"
+            class="min-w-52 flex-1 sm:max-w-sm"
             placeholder="Filter session activity..."
             ariaLabel="Filter session activity"
             [value]="query()"
             (search)="query.set($event)"
           />
+          @if (query().trim()) {
+            <span class="text-muted-foreground text-xs tabular-nums" aria-live="polite">
+              Showing {{ filteredEntries().length }} of {{ entries().length }}
+            </span>
+          }
         </search>
       }
 

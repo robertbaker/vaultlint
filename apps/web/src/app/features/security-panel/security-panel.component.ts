@@ -221,6 +221,7 @@ import type {
               size="sm"
               class="w-full"
               [disabled]="checkingHibp()"
+              [attr.aria-busy]="checkingHibp()"
               (click)="checkHibp.emit()"
             >
               <ng-icon name="matSecurityRound" class="size-4" aria-hidden="true" />
@@ -247,6 +248,7 @@ import type {
               size="sm"
               class="w-full"
               [disabled]="checkingLinks()"
+              [attr.aria-busy]="checkingLinks()"
               (click)="checkLinks.emit()"
             >
               <ng-icon name="matLinkRound" class="size-4" aria-hidden="true" />
@@ -274,6 +276,7 @@ import type {
               size="sm"
               class="w-full"
               [disabled]="checkingMobileUris()"
+              [attr.aria-busy]="checkingMobileUris()"
               (click)="checkMobileUris.emit()"
             >
               <ng-icon name="matDevicesRound" class="size-4" aria-hidden="true" />
