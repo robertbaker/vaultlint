@@ -94,8 +94,15 @@ import { parseErrorMessage } from "../../core/parse-error";
                   result.matches.length
                 }}</strong>
               </div>
-              <div class="border-border bg-background/60 rounded-lg border p-3">
-                <span class="text-muted-foreground block text-xs">Needs review</span>
+              <div
+                [class]="
+                  'rounded-lg border p-3 ' +
+                  (result.candidates.length > 0
+                    ? 'border-warning/40 bg-warning/10 text-warning-readable'
+                    : 'border-border bg-background/60')
+                "
+              >
+                <span class="block text-xs">Needs review</span>
                 <strong class="mt-0.5 block text-lg font-bold tabular-nums">{{
                   result.candidates.length
                 }}</strong>

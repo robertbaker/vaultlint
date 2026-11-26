@@ -126,7 +126,7 @@ export interface StatJumpEvent {
         <div class="grid grid-cols-2 gap-2 @lg:grid-cols-4 @3xl:shrink-0">
           <button
             type="button"
-            class="border-border bg-background/60 hover:border-foreground/30 hover:bg-muted/50 focus-visible:ring-ring flex min-h-12 flex-col items-start justify-between gap-0.5 rounded-lg border px-3 py-2 text-left transition-colors outline-none focus-visible:ring-2"
+            class="border-border bg-background/60 hover:border-foreground/30 hover:bg-muted/50 focus-visible:ring-ring flex min-h-12 cursor-pointer flex-col items-start justify-between gap-0.5 rounded-lg border px-3 py-2 text-left transition-colors outline-none hover:shadow-2xs focus-visible:ring-2"
             (click)="jumpTo.emit({ tab: 'explorer', filter: 'all' })"
           >
             <span class="text-muted-foreground text-xs font-medium">Total Items</span>
@@ -136,7 +136,7 @@ export interface StatJumpEvent {
           <button
             type="button"
             [class]="
-              'focus-visible:ring-ring flex min-h-12 flex-col items-start justify-between gap-0.5 rounded-lg border px-3 py-2 text-left transition-colors outline-none focus-visible:ring-2 ' +
+              'focus-visible:ring-ring flex min-h-12 cursor-pointer flex-col items-start justify-between gap-0.5 rounded-lg border px-3 py-2 text-left transition-colors outline-none hover:shadow-2xs focus-visible:ring-2 ' +
               (duplicateCount() > 0
                 ? 'border-warning/40 bg-warning/10 text-warning-readable hover:bg-warning/15'
                 : 'border-border bg-background/60 hover:border-foreground/30 hover:bg-muted/50')
@@ -152,7 +152,7 @@ export interface StatJumpEvent {
           <button
             type="button"
             [class]="
-              'focus-visible:ring-ring flex min-h-12 flex-col items-start justify-between gap-0.5 rounded-lg border px-3 py-2 text-left transition-colors outline-none focus-visible:ring-2 ' +
+              'focus-visible:ring-ring flex min-h-12 cursor-pointer flex-col items-start justify-between gap-0.5 rounded-lg border px-3 py-2 text-left transition-colors outline-none hover:shadow-2xs focus-visible:ring-2 ' +
               (weakCount() > 0
                 ? 'border-destructive/40 bg-destructive/10 text-destructive-readable hover:bg-destructive/15'
                 : 'border-border bg-background/60 hover:border-foreground/30 hover:bg-muted/50')
@@ -166,7 +166,7 @@ export interface StatJumpEvent {
           <button
             type="button"
             [class]="
-              'focus-visible:ring-ring flex min-h-12 flex-col items-start justify-between gap-0.5 rounded-lg border px-3 py-2 text-left transition-colors outline-none focus-visible:ring-2 ' +
+              'focus-visible:ring-ring flex min-h-12 cursor-pointer flex-col items-start justify-between gap-0.5 rounded-lg border px-3 py-2 text-left transition-colors outline-none hover:shadow-2xs focus-visible:ring-2 ' +
               (fidoCount() > 0
                 ? 'border-info/40 bg-info/10 text-info-text hover:bg-info/15'
                 : 'border-border bg-background/60 hover:border-foreground/30 hover:bg-muted/50')

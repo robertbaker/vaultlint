@@ -76,7 +76,7 @@ export interface VaultFilePayload {
         size="sm"
         [class]="
           dragOver()
-            ? 'landing-dropzone border-primary bg-muted/40 border-2 border-dashed transition-colors'
+            ? 'landing-dropzone border-primary bg-muted/40 ring-primary/20 border-2 border-dashed ring-2 transition-colors'
             : 'landing-dropzone border-2 border-dashed transition-colors'
         "
         (dragover)="onDragOver($event)"
@@ -126,6 +126,7 @@ export interface VaultFilePayload {
                     variant="outline"
                     size="xs"
                     [disabled]="vendorBusy()"
+                    [attr.aria-busy]="vendorBusy()"
                     (click)="loadVendorCli.emit(p.id)"
                   >
                     Import from {{ p.displayName }} ({{ p.binary }})
