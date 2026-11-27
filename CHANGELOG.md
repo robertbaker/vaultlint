@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.5.0](https://github.com/robertbaker/vaultlint/compare/v1.4.0...v1.5.0) (2026-11-27)
+
+### Features
+
+- **web:** polish stat tile hover, dropzone ring, and migration review tile ([1f27a52](https://github.com/robertbaker/vaultlint/commit/1f27a524f2e101bf775e42f43b472a000ddce25b))
+
+### Bug Fixes
+
+- **site:** underline changelog version links and restore link spacing ([3e63f0f](https://github.com/robertbaker/vaultlint/commit/3e63f0f0e38bc349212d582f0a6129e24d25799e))
+
 ## [1.4.0](https://github.com/robertbaker/vaultlint/compare/v1.3.0...v1.4.0) (2026-11-26)
 
 ### Features
